@@ -33,7 +33,9 @@ export const createApp = (orm: MikroORM) => {
 
   // set up ts-rest router
   const router = createRouter(orm);
-  createExpressEndpoints(contract, router, app);
+  createExpressEndpoints(contract, router, app, {
+    logInitialization: false,
+  });
 
   return app;
 };
