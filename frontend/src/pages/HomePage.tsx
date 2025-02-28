@@ -18,18 +18,51 @@ const HomePage = () => {
 
   if (isLoading) {
     return (
-      <div style={{ display: "flex", justifyContent: "center", alignItems: "flex-start", minHeight: "100vh", paddingTop: "10rem" }}>
-        <h1 style={{ fontSize: "1.5rem", color: "#6c757d" }}>
-          Loading...
-        </h1>
+      <div style={{ 
+        display: "flex", 
+        flexDirection: "column",
+        justifyContent: "center", 
+        alignItems: "center", 
+        minHeight: "60vh" 
+      }}>
+        {/* Text above spinner */}
+        <h2 style={{
+        fontSize: "1.5rem",
+        color: "#6c757d",
+        marginBottom: "1.5rem"
+      }}>
+        Loading...
+      </h2>
+
+        <div style={{
+          display: "inline-block",
+          position: "relative",
+          width: "80px",
+          height: "80px"
+        }}>
+          <style dangerouslySetInnerHTML={{
+            __html: `
+              @keyframes spinner {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+              }
+            `
+          }} />
+          <div style={{
+            boxSizing: "border-box",
+            display: "block",
+            position: "absolute",
+            width: "64px",
+            height: "64px",
+            margin: "8px",
+            border: "8px solid #6c757d",    // color of loading animation
+            borderRadius: "50%",
+            borderColor: "#4263eb transparent transparent transparent",
+            animation: "spinner 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite"
+          }}></div>
+        </div>
       </div>
     );
-    // return <h1 style={{
-    //   textAlign: "center",
-    //   fontSize: "1.5rem",
-    //   color: "#6c757d",
-    //   marginTop: "2rem"
-    // }}>Loading...</h1>;
   }
 
   if (data?.status !== 200) {
