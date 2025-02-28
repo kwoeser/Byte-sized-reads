@@ -20,6 +20,15 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
 
 
         <Navbar/>
+        <style dangerouslySetInnerHTML={{
+        __html: `
+          body {
+            background-color: #f8f9fa;
+            background-image: radial-gradient(#4263eb11 1px, transparent 1px);
+            background-size: 20px 20px;
+          }
+        `
+      }} />
         <div style={{
           backgroundColor: "#f8f9fa", 
           minHeight: "100vh",
