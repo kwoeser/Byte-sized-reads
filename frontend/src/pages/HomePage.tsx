@@ -9,7 +9,7 @@ const HomePage = () => {
   // const { data, isLoading, error } = apiClient.hello.get.useQuery(['hello']);
 
   // useQuery hook to get data from /hello
-  const { data, isLoading, error } = apiClient.hello.useQuery(
+  const { data, isLoading, error, refetch } = apiClient.hello.useQuery(
     ["hello"], // <- queryKey
     {}, // <- Query params, Params, Body etc (all typed)
   );
@@ -66,22 +66,76 @@ const HomePage = () => {
   }
 
   if (data?.status !== 200) {
-    console.log("error");
     return (
-      <div style={{ display: "flex", justifyContent: "center", alignItems: "flex-start", minHeight: "100vh", paddingTop: "10rem" }}>
-        <h1 style={{ fontSize: "1.5rem", color: "#dc3545" }}>
-          Connection error
-        </h1>
+      <div style={{ 
+        display: "flex", 
+        flexDirection: "column",
+        justifyContent: "center", 
+        alignItems: "center", 
+        minHeight: "60vh",
+        padding: "2rem",
+        backgroundColor: "#fff5f5",
+        borderRadius: "8px",
+        border: "1px solid #ffcccc"
+      }}>
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="10" stroke="#dc3545" strokeWidth="2"/>
+          <path d="M12 7v6" stroke="#dc3545" strokeWidth="2" strokeLinecap="round"/>
+          <circle cx="12" cy="16" r="1" fill="#dc3545"/>
+        </svg>
+        <h2 style={{ 
+          fontSize: "1.5rem", 
+          color: "#dc3545", 
+          marginTop: "1rem" 
+        }}>
+          Connection Error
+        </h2>
+        <p style={{ 
+          color: "#6c757d",
+          textAlign: "center",
+          maxWidth: "400px",
+          marginTop: "0.5rem"
+        }}>
+          We couldn't connect to the server. Please check your connection and try again.
+        </p>
+        <button 
+          onClick={() => refetch()} // Add onClick handler to call refetch
+          style={{
+            backgroundColor: "#dc3545",
+            color: "white",
+            padding: "0.5rem 1.25rem",
+            borderRadius: "0.375rem",
+            border: "none",
+            marginTop: "1.5rem",
+            cursor: "pointer",
+            transition: "background-color 0.2s ease"
+          }}
+          onMouseOver={(e) => e.currentTarget.style.backgroundColor = "#bb2d3b"} 
+          onMouseOut={(e) => e.currentTarget.style.backgroundColor = "#dc3545"}
+        >
+          Retry
+        </button>
       </div>
     );
-    // console.log("error");
-    // return <h1 style={{
-    //   textAlign: "center",
-    //   fontSize: "1.5rem",
-    //   color: "#dc3545",
-    //   marginTop: "2rem"
-    // }}>Connection error</h1>;
   }
+
+  // if (data?.status !== 200) {
+  //   console.log("error");
+  //   return (
+  //     <div style={{ display: "flex", justifyContent: "center", alignItems: "flex-start", minHeight: "100vh", paddingTop: "10rem" }}>
+  //       <h1 style={{ fontSize: "1.5rem", color: "#dc3545" }}>
+  //         Connection error
+  //       </h1>
+  //     </div>
+  //   );
+  //   // console.log("error");
+  //   // return <h1 style={{
+  //   //   textAlign: "center",
+  //   //   fontSize: "1.5rem",
+  //   //   color: "#dc3545",
+  //   //   marginTop: "2rem"
+  //   // }}>Connection error</h1>;
+  // }
 
   return (
     <div style={{
