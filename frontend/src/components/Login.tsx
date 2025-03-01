@@ -5,8 +5,10 @@ type Props = {}
 const Login = (props: Props) => {
   return (
     <div>
-        
-      <button className='login-button'>Login</button> 
+      
+      <button className="bg-green-600 hover:bg-black text-white px-4 py-2 rounded-lg">
+        Login
+      </button> 
     
     
     </div>

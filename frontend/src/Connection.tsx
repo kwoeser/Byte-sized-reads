@@ -1,13 +1,11 @@
-import { initQueryClient } from '@ts-rest/react-query';
-import { contract } from "../../api/src/apiContract"; 
+import { initQueryClient } from "@ts-rest/react-query";
+import { contract } from "../../api/src/apiContract";
 
-const BACKEND_URL = "http://localhost:5174"; 
 
-// https://ts-rest.com/docs/react-query/v4
+// api calls go through vite's proxy
+const BACKEND_URL = "/api";
+
 export const apiClient = initQueryClient(contract, {
   baseUrl: BACKEND_URL,
-  baseHeaders: {},
-  // api: ...,
+  baseHeaders: { "Content-Type": "application/json" },
 });
-
-

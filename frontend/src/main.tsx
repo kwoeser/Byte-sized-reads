@@ -14,14 +14,16 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
 
     <QueryClientProvider client={queryClient}>
 
-      <BrowserRouter>
+        <BrowserRouter>
 
+          
+            <Navbar/>
+              <div className="pt-20">
+                <App />
+              </div>
 
-        <Navbar/>
-          <App />
+        </BrowserRouter>
 
-
-      </BrowserRouter>
 
     </QueryClientProvider>
   </React.StrictMode>

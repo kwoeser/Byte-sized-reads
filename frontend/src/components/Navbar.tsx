@@ -1,20 +1,29 @@
 import { Link } from "react-router-dom";
 import Login from "./Login";
+import SearchBar from "./SearchBar";
 
-type Props = {}
 
-const Navbar = (props: Props) => {
+const Navbar = () => {
   return (
-    <div className="navbar">
-      Navbar
+
+    <nav className="fixed w-full bg-white text-black shadow-md border-b border-gray-100">
       
-      {/* <Link>Home</Link> */}
+      <div className="flex items-center px-8 py-3">
 
-      {/* Search Bar */}
-      {/* Login */}
-      <Login/>
+        {/* navbar links */}
+        <div className="space-x-6">
+          <Link to="/" className="hover:text-red-500">Home</Link>
+          <Link to="/Library" className="hover:text-red-500">Our Library</Link>
+        </div>
 
-    </div>
+       
+        {/* might move search bar off navbar onto middle of page or on the top right of the home page */}
+        <SearchBar/>
+        
+        <Link to="/LoginPage"><Login/></Link>
+
+      </div>
+    </nav>
     
       
   )
