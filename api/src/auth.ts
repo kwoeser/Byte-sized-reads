@@ -51,6 +51,12 @@ export const register = async (
   password: string,
   res: express.Response
 ): Promise<{ ok: User } | { error: string }> => {
+  // Sees if the username is empty 
+  // *Test was failing for auth.test.ts when username was empty using vitest outputting a 200 instead of 400*
+  if (!username) {
+    return { error: "Username cannot be empty" };
+  }
+
   // check if the username is in use
   const existing = await em.findOne(User, {
     username,
