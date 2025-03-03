@@ -59,3 +59,24 @@ Attendees: Alen, An, Hazel, Jason, Karma, Sam
 - Other topics
     - Discussed scraper implementation
     - Next meeting after class Monday
+
+# Scrum 3/03/2025
+
+Attendees: Alen, An, Hazel, Jason, Karma, Sam
+
+- Progress updates
+    - Alen working on more backend tests
+    - Sam working on scraper
+    - Jason working on Docker setup
+    - Karma working on frontend
+    - An working on frontend styling
+    - Hazel working on articles and submissions in the API
+
+- Blockers
+    - Sam waiting for hosted Postgres
+
+- Action items
+    - Continue with implementation
+
+- Other topics
+    - Next meeting after class Wednesday
