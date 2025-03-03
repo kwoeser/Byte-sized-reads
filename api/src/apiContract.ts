@@ -25,15 +25,6 @@ const submissionSchema = z.object({
 });
 
 export const contract = c.router({
-  hello: {
-    summary: "Test endpoint",
-    method: "GET",
-    path: "/hello",
-    responses: {
-      200: z.string(),
-    },
-  },
-
   register: {
     summary: "Register an account",
     method: "POST",

@@ -9,13 +9,6 @@ export const createRouter = (orm: MikroORM) => {
   const s = initServer();
 
   return s.router(contract, {
-    hello: async ({ req, res }) => {
-      return {
-        status: 200,
-        body: "hello world",
-      };
-    },
-
     register: async ({ req, res }) => {
       const registerRes = await register(
         orm.em,
