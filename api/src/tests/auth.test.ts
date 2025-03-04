@@ -129,7 +129,7 @@ describe("/auth/register", () => {
     const res2 = await client.register({
       body: { username: "testuser", password: "bbbbbbbb" },
     });
-    // should succeed
+    // should fail
     expect(res2.status).toBe(400);
 
     // should be only 1 user row
