@@ -17,11 +17,12 @@ const articleSchema = z.object({
   wordCount: z.number(),
 });
 
-const moderationStatusSchema = z.enum(["approved", "rejected"]);
+const moderationStatusUpdateSchema = z.enum(["approved", "rejected"]);
+const moderationStatusSchema = z.enum(["none", "approved", "rejected"]);
 const submissionSchema = z.object({
   id: z.string().uuid(),
   url: z.string(),
-  moderationStatus: moderationStatusSchema.nullable(),
+  moderationStatus: moderationStatusSchema,
 });
 
 export const contract = c.router({
@@ -145,7 +146,7 @@ export const contract = c.router({
       id: z.string().uuid(),
     }),
     body: z.object({
-      status: moderationStatusSchema,
+      status: moderationStatusUpdateSchema,
     }),
     responses: {
       200: submissionSchema,
