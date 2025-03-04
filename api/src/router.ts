@@ -136,6 +136,7 @@ export const createRouter = (orm: MikroORM) => {
         {
           first: 10,
           after: prevCursor,
+          orderBy: { createdAt: "DESC" },
         }
       );
 
