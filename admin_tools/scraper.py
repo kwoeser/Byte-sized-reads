@@ -3,7 +3,7 @@ import requests
 from readabilipy import simple_json_from_html_string
 from urllib.parse import urlparse
 
-filepath = os.path.join(r"C:\Users\Samuel Ellis\Github\BossModeP2\admin_tools", "articles.txt")
+filepath = os.path.join(r"C:\Users\sellis12\VSCode\BossModeP2\admin_tools", "articles.txt")
 
 if os.path.exists(filepath):
     with open(filepath, 'r', encoding='utf-8') as file:
@@ -13,13 +13,14 @@ if os.path.exists(filepath):
     for i in range(0, len(lines), 2):
         urls.append(lines[i].strip())
 
-    for url in urls:
+    for url in urls[0:1]:
         parsed_url = urlparse(url)
         if parsed_url.scheme and parsed_url.netloc:
             try:
                 req = requests.get(url)
                 req.raise_for_status()
                 article = simple_json_from_html_string(req.text, use_readability=False)
+                print(article)
 
                 if article and 'title' in article:
                     print(f"Title from {url}: {article['title']}")
