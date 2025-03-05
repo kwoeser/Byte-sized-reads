@@ -7,7 +7,7 @@ const readingTimes = ["Short (< 5 min)", "Medium (5-15 min)", "Long (> 15 min)"]
 const DropdownFilter = ({ onFilterChange }: { onFilterChange: (filters: any) => void }) => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
-  const [isOpen, setIsOpen] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
 
   const handleCategoryChange = (category: string) => {
     const newCategory = selectedCategory === category ? null : category;
@@ -27,24 +27,42 @@ const DropdownFilter = ({ onFilterChange }: { onFilterChange: (filters: any) => 
     onFilterChange({ category: null, readingTime: null });
   };
 
-  return (
-    <div className="absolute left-4 top-24 z-40 w-64 bg-white shadow-lg rounded-lg border border-neutral-200">
-      <div className="p-4">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-semibold text-neutral-800 flex items-center">
-            <Filter className="mr-2 text-primary" size={20} />
-            Filters
-          </h3>
-          <button 
-            onClick={() => setIsOpen(!isOpen)} 
-            className="text-neutral-600 hover:text-neutral-900 transition-colors"
-          >
-            {isOpen ? <X size={20} /> : <ChevronDown size={20} />}
-          </button>
-        </div>
+  const activeFiltersCount = [selectedCategory, selectedTime].filter(Boolean).length;
 
-        {isOpen && (
-          <div>
+  return (
+    <div 
+      className="relative inline-block"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <button className="flex items-center px-3 py-2 text-neutral-700 hover:text-primary transition-colors">
+        <Filter className="mr-1" size={18} />
+        <span className="mr-1">Filters</span>
+        {activeFiltersCount > 0 && (
+          <span className="bg-primary text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+            {activeFiltersCount}
+          </span>
+        )}
+        <ChevronDown size={16} className={`ml-1 transition-transform ${isHovered ? 'rotate-180' : ''}`} />
+      </button>
+
+      {isHovered && (
+        <div className="absolute right-0 mt-1 z-40 w-64 bg-white shadow-lg rounded-lg border border-neutral-200">
+          <div className="p-4">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-semibold text-neutral-800">
+                Filters
+              </h3>
+              {(selectedCategory || selectedTime) && (
+                <button 
+                  onClick={clearFilters}
+                  className="text-neutral-600 hover:text-neutral-900 transition-colors"
+                >
+                  <X size={18} />
+                </button>
+              )}
+            </div>
+
             {/* Category Filter */}
             <div className="mb-4">
               <h4 className="text-sm font-medium text-neutral-700 mb-2">Category</h4>
@@ -90,21 +108,9 @@ const DropdownFilter = ({ onFilterChange }: { onFilterChange: (filters: any) => 
                 ))}
               </div>
             </div>
-
-            {/* Clear Filters */}
-            {(selectedCategory || selectedTime) && (
-              <div className="mt-4 pt-2 border-t border-neutral-200">
-                <button
-                  onClick={clearFilters}
-                  className="w-full text-sm text-primary hover:bg-neutral-100 py-2 rounded-md transition-colors"
-                >
-                  Clear All Filters
-                </button>
-              </div>
-            )}
-          </div>
-        )}
-      </div>
+        </div>
+     </div>
+    )}
     </div>
   );
 };
