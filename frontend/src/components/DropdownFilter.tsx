@@ -28,7 +28,7 @@ const DropdownFilter = ({ onFilterChange }: { onFilterChange: (filters: any) => 
   };
 
   return (
-    <div className="fixed left-4 top-24 z-40 w-64 bg-white shadow-lg rounded-lg border border-neutral-200">
+    <div className="absolute left-4 top-24 z-40 w-64 bg-white shadow-lg rounded-lg border border-neutral-200">
       <div className="p-4">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-lg font-semibold text-neutral-800 flex items-center">
