@@ -35,7 +35,7 @@ const DropdownFilter = ({ onFilterChange }: { onFilterChange: (filters: any) => 
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <button className="flex items-center px-3 py-2 text-neutral-700 hover:text-primary transition-colors">
+      <button className="flex items-center px-0 py-2 text-neutral-700 hover:text-primary transition-colors">
         <Filter className="mr-2" size={18} />
         <span>Filters</span>
         {activeFiltersCount > 0 && (

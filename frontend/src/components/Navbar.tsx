@@ -13,7 +13,7 @@ const Navbar = () => {
       <div className="flex items-center justify-between px-8 py-3">
 
         {/* Left side */}
-        <div className="flex items-center space-x-6">
+        <div className="flex items-center space-x-10">
           <Link to="/" className="flex items-center hover:text-red-500">
            <Home className="mr-2" size={18} />
            <span>Home</span>

@@ -12,7 +12,7 @@ const ConnectionError = ({ onRetry }: { onRetry: () => void }) => {
         </div>
         <h2 className="text-2xl font-bold text-neutral-800 mb-2">Connection Error</h2>
         <p className="text-neutral-600 mb-6 text-center max-w-md">
-          We couldn't connect to the server. Please check your internet connection and try again.
+          We couldn't connect to the server. Please check your database connection and try again.
         </p>
         <button 
           onClick={onRetry}
