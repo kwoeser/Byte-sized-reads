@@ -25,15 +25,12 @@ const Navbar = () => {
         <DropdownFilter />
         </div>
        
-        {/* Rghit side */}
-        <div className="flex items-center space-x-4">
-        <SearchBar/>
-        
+        {/*Rightt side*/}
         <Link to="/LoginPage">
          <Login/>
         </Link>
       </div>
-    </div>
+
     </nav>
     
 
