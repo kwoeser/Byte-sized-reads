@@ -2,7 +2,9 @@ import "dotenv/config";
 
 import { type Options } from "@mikro-orm/core";
 import { defineConfig, PostgreSqlDriver } from "@mikro-orm/postgresql";
+import { Article } from "./entities/Article.js";
 import { Session } from "./entities/Session.js";
+import { Submission } from "./entities/Submission.js";
 import { User } from "./entities/User.js";
 import { env } from "./env.js";
 
@@ -11,8 +13,10 @@ import { env } from "./env.js";
  */
 const baseOptions: Options<PostgreSqlDriver> = {
   entities: [
-    User,
+    Article,
     Session,
+    Submission,
+    User,
     //
   ],
   dynamicImportProvider: (id) => import(id),

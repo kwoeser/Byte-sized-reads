@@ -36,3 +36,47 @@ Attendees: Alen, An, Hazel, Karma, Sam
       Sam and An working on SRS, Hazel and Jason working on SDS,
       Alen and Karma working on project plan.
     - Planning to meet next online at 7pm on Thursday.
+
+# Scrum 02/27/2025
+
+Attendees: Alen, An, Hazel, Jason, Karma, Sam
+
+- Progress updates
+    - Karma working on frontend auth
+    - An working on frontend UI
+    - Jason found starting links, researched reading difficulty, working on Docker next
+    - Sam working on scraper
+    - Alen working on database schemas
+    - Hazel working on backend
+
+- Blockers
+    - Karma waiting for PR review
+
+- Action items
+    - PR reviews
+    - Break up tasks for backend and frontend
+
+- Other topics
+    - Discussed scraper implementation
+    - Next meeting after class Monday
+
+# Scrum 3/03/2025
+
+Attendees: Alen, An, Hazel, Jason, Karma, Sam
+
+- Progress updates
+    - Alen working on more backend tests
+    - Sam working on scraper
+    - Jason working on Docker setup
+    - Karma working on frontend
+    - An working on frontend styling
+    - Hazel working on articles and submissions in the API
+
+- Blockers
+    - Sam waiting for hosted Postgres
+
+- Action items
+    - Continue with implementation
+
+- Other topics
+    - Next meeting after class Wednesday

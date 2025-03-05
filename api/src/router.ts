@@ -1,19 +1,14 @@
 import type { MikroORM } from "@mikro-orm/postgresql";
+import { initServer } from "@ts-rest/express";
 import { contract } from "./apiContract.js";
 import { login, logout, register, validateSession } from "./auth.js";
-import { initServer } from "@ts-rest/express";
+import { Article } from "./entities/Article.js";
+import { ModerationStatus, Submission } from "./entities/Submission.js";
 
 export const createRouter = (orm: MikroORM) => {
   const s = initServer();
 
   return s.router(contract, {
-    hello: async ({ req, res }) => {
-      return {
-        status: 200,
-        body: "hello world",
-      };
-    },
-
     register: async ({ req, res }) => {
       const registerRes = await register(
         orm.em,
@@ -76,6 +71,114 @@ export const createRouter = (orm: MikroORM) => {
       return {
         status: 200,
         body: { id: user.id, username: user.username },
+      };
+    },
+
+    getArticles: async ({ req, res }) => {
+      const prevCursor = req.query.cursor ?? undefined;
+      const articles = await orm.em.findByCursor(
+        Article,
+        {},
+        {
+          first: 10,
+          after: prevCursor,
+        }
+      );
+
+      return {
+        status: 200,
+        body: {
+          articles: articles.items.map((a) => ({
+            id: a.id,
+            url: a.url,
+            siteName: a.siteName,
+            title: a.title,
+            excerpt: a.excerpt,
+            wordCount: a.wordCount,
+          })),
+          cursor: articles.endCursor,
+        },
+      };
+    },
+
+    submitArticle: async ({ req, res }) => {
+      // check for existing
+      const existing = await orm.em.findOne(Submission, { url: req.body.url });
+      if (existing) {
+        return {
+          status: 200,
+          body: {
+            id: existing.id,
+            url: existing.url,
+            moderationStatus: existing.moderationStatus ?? null,
+          },
+        };
+      }
+
+      const submission = new Submission(req.body.url);
+      await orm.em.persistAndFlush(submission);
+
+      return {
+        status: 200,
+        body: {
+          id: submission.id,
+          url: submission.url,
+          moderationStatus: submission.moderationStatus ?? null,
+        },
+      };
+    },
+
+    getSubmissions: async ({ req, res }) => {
+      const prevCursor = req.query.cursor ?? undefined;
+      const submissions = await orm.em.findByCursor(
+        Submission,
+        {},
+        {
+          first: 10,
+          after: prevCursor,
+        }
+      );
+
+      return {
+        status: 200,
+        body: {
+          submissions: submissions.items.map((s) => ({
+            id: s.id,
+            url: s.url,
+            moderationStatus: s.moderationStatus ?? null,
+          })),
+          cursor: submissions.endCursor,
+        },
+      };
+    },
+
+    moderateSubmission: async ({ req, res }) => {
+      // TODO: check moderator status
+
+      const submission = await orm.em.findOne(Submission, {
+        id: req.params.id,
+      });
+      if (!submission) {
+        return {
+          status: 404,
+          body: "Not Found",
+        };
+      }
+
+      if (req.body.status === "approved") {
+        submission.moderationStatus = ModerationStatus.APPROVED;
+      } else if (req.body.status === "rejected") {
+        submission.moderationStatus = ModerationStatus.REJECTED;
+      }
+      await orm.em.flush();
+
+      return {
+        status: 200,
+        body: {
+          id: submission.id,
+          url: submission.url,
+          moderationStatus: submission.moderationStatus ?? null,
+        },
       };
     },
   });

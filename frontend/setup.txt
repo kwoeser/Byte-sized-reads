@@ -1,1 +1,14 @@
+Backend api:
+pnpm install
+pnpm run build
+pnpm run dev
 
+.env: 
+DATABASE_URL=postgres://myuser:mypassword@localhost:5432/mydatabase
+PORT=5174
+
+
+
+Frontend:
+pnpm install 
+pnpm run dev
