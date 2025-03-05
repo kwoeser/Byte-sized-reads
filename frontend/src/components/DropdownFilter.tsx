@@ -36,14 +36,14 @@ const DropdownFilter = ({ onFilterChange }: { onFilterChange: (filters: any) => 
       onMouseLeave={() => setIsHovered(false)}
     >
       <button className="flex items-center px-3 py-2 text-neutral-700 hover:text-primary transition-colors">
-        <Filter className="mr-1" size={18} />
-        <span className="mr-1">Filters</span>
+        <Filter className="mr-2" size={18} />
+        <span>Filters</span>
         {activeFiltersCount > 0 && (
-          <span className="bg-primary text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+          <span className="ml-2 bg-primary text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
             {activeFiltersCount}
           </span>
         )}
-        <ChevronDown size={16} className={`ml-1 transition-transform ${isHovered ? 'rotate-180' : ''}`} />
+        <ChevronDown size={16} className={`ml-2 transition-transform ${isHovered ? 'rotate-180' : ''}`} />
       </button>
 
       {isHovered && (
