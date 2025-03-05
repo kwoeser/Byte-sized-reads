@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { ChevronDown, Filter, X } from "lucide-react";
 
-const categories = ["Computers", "Travel", "Video Games"];
+const categories = ["Technology", "Travel", "Video Games"];
 const readingTimes = ["Short (< 5 min)", "Medium (5-15 min)", "Long (> 15 min)"];
 
 const DropdownFilter = ({ onFilterChange }: { onFilterChange: (filters: any) => void }) => {
