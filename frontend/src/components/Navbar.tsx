@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
 import Login from "./Login";
 import SearchBar from "./SearchBar";
+import DropdownFilter from "./DropdownFilter";
+import { Home, Book } from "lucide-react";
 
 
 const Navbar = () => {
@@ -8,24 +10,30 @@ const Navbar = () => {
 
     <nav className="fixed w-full bg-white text-black shadow-md border-b border-gray-100">
       
-      <div className="flex items-center px-8 py-3">
+      <div className="flex items-center justify-between px-8 py-3">
 
-        {/* navbar links */}
-        <div className="space-x-6">
-          <Link to="/" className="hover:text-red-500">Home</Link>
-          <Link to="/Library" className="hover:text-red-500">Our Library</Link>
+        {/* Left side */}
+        <div className="flex items-center space-x-10">
+          <Link to="/" className="flex items-center hover:text-red-500">
+           <Home className="mr-2" size={18} />
+           <span>Home</span>
+        </Link>
+        <Link to="/Library" className="flex items-center hover:text-red-500">
+          <Book className="mr-2" size={18} />
+          <span>Our Library</span>
+         </Link>
+        <DropdownFilter />
         </div>
-
        
-        {/* might move search bar off navbar onto middle of page or on the top right of the home page */}
-        <SearchBar/>
-        
-        <Link to="/LoginPage"><Login/></Link>
-
+        {/*Rightt side*/}
+        <Link to="/LoginPage">
+         <Login/>
+        </Link>
       </div>
+
     </nav>
     
-      
+
   )
 }
 
