@@ -138,3 +138,147 @@ describe("/auth/register", () => {
 });
 
 // TODO: tests for login, logout, getuser when unauthed
+describe("/auth/login", () => {
+  let app: TestApp;
+  let em: EntityManager;
+
+  beforeEach(async () => {
+    app = await startTestApp();
+    em = app.orm.em.fork();
+  });
+
+  afterEach(async () => {
+    await app.cleanup();
+  });
+
+  test("login with correct credentials", async () => {
+    const client = createTestClient(app);
+
+    // Register a new user
+    const registerRes = await client.register({
+      body: {
+        username: "testuser",
+        password: "aaaaaaaa",
+      },
+    });
+    expect(registerRes.status).toBe(200);
+
+    // Log in with the same credentials
+    const loginRes = await client.login({
+      body: {
+        username: "testuser",
+        password: "aaaaaaaa",
+      },
+    });
+    expect(loginRes.status).toBe(200);
+
+    // Should set the session cookie
+    const setCookie = loginRes.headers.getSetCookie();
+    expect(setCookie.length).toBe(1);
+    expect(setCookie[0]).toMatch(/session=(.*);/);
+  });
+
+  test("login with incorrect credentials", async () => {
+    const client = createTestClient(app);
+
+    // Register a new user
+    const registerRes = await client.register({
+      body: {
+        username: "testuser",
+        password: "aaaaaaaa",
+      },
+    });
+    expect(registerRes.status).toBe(200);
+
+    // Try logging in with incorrect credentials
+    const loginRes = await client.login({
+      body: {
+        username: "testuser",
+        password: "wrongpassword",
+      },
+    });
+    // Unauthorized
+    expect(loginRes.status).toBe(401); 
+  });
+
+  test("logout clears session", async () => {
+    const client = createTestClient(app);
+
+    // Register and log in
+    const registerRes = await client.register({
+      body: {
+        username: "testuser",
+        password: "aaaaaaaa",
+      },
+    });
+    expect(registerRes.status).toBe(200);
+
+    const loginRes = await client.login({
+      body: {
+        username: "testuser",
+        password: "aaaaaaaa",
+      },
+    });
+    expect(loginRes.status).toBe(200);
+
+    // Get the session cookie and verify it's set
+    const setCookie = loginRes.headers.getSetCookie();
+    const sessionCookie = parseSetSessionCookie(setCookie);
+
+    // Create an authed client
+    const authedClient = createTestClient(app, { sessionCookie });
+
+    // Now log out
+    const logoutRes = await authedClient.logout();
+    expect(logoutRes.status).toBe(200); // Should succeed
+
+    
+    const getUserRes = await authedClient.getUser();
+    // unauthenticated
+    expect(getUserRes.status).toBe(401); 
+  });
+
+  test("getUser fails when unauthenticated", async () => {
+    const client = createTestClient(app);
+
+    // Try to get user without authentication
+    const res = await client.getUser();
+    // Should fail with 401
+    expect(res.status).toBe(401); 
+  });
+
+  test("getUser works after login", async () => {
+    const client = createTestClient(app);
+
+    // Register and log in
+    const registerRes = await client.register({
+      body: {
+        username: "testuser",
+        password: "aaaaaaaa",
+      },
+    });
+    expect(registerRes.status).toBe(200);
+
+    const loginRes = await client.login({
+      body: {
+        username: "testuser",
+        password: "aaaaaaaa",
+      },
+    });
+    expect(loginRes.status).toBe(200);
+
+    // Get the session cookie
+    const setCookie = loginRes.headers.getSetCookie();
+    const sessionCookie = parseSetSessionCookie(setCookie);
+
+    // Create an authed client
+    const authedClient = createTestClient(app, { sessionCookie });
+
+    // Get user with auth
+    const getUserRes = await authedClient.getUser();
+    expect(getUserRes.status).toBe(200);
+    expect(getUserRes.body).toEqual(expect.objectContaining({
+      username: "testuser",
+    }));
+  });
+});
