@@ -1,0 +1,11 @@
+node_modules
+.pnpm-store
+
+.git
+.gitignore
+Dockerfile
+docker-compose.yml
+.env
+logs
+.vscode
+.DS_Store

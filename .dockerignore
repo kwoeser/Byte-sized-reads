@@ -1,0 +1,14 @@
+node_modules
+.pnpm-store
+
+.git
+.gitignore
+Dockerfile
+docker-compose.yml
+logs
+.vscode
+.DS_Store
+api/node_modules
+frontend/node_modules
+api/dist
+frontend/dist
