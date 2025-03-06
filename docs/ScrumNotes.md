@@ -80,3 +80,28 @@ Attendees: Alen, An, Hazel, Jason, Karma, Sam
 
 - Other topics
     - Next meeting after class Wednesday
+
+# Scrum Notes 3/05/2025
+
+Attendees: Alen, An, Hazel, Jason, Karma, Sam
+
+- Progress updates
+    - Jason making progress on Docker (backend and database now working)
+    - Sam working on scraper
+    - An working on frontend styling
+    - Karma working on frontend articles
+    - Alen working on backend tests
+    - Hazel working on backend, tests
+
+- Blockers
+    - Waiting for PR reviews
+
+- Action items
+    - Alen working on moderator setup
+    - Finish implementation ideally by Sunday
+    - Work on presentation
+
+- Other topics
+    - Scraper design
+    - Presentation
+    - Next meeting 7pm Saturday
