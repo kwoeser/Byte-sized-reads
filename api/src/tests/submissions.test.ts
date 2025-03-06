@@ -147,8 +147,31 @@ describe("/submissions", () => {
     expect(res4.body.submissions[2]!.id).toBe(res1.body.id);
   });
 
-  // TODO: should only be available to moderators
-  // TODO: should be able to filter for unmoderated only
+  test("should only be available to moderators", async () => {
+    const client = createTestClient(app);
+
+    // submit some articles
+    await client.submitArticle({ body: { url: "https://example.com/posts/1" } });
+    await client.submitArticle({ body: { url: "https://example.com/posts/2" } });
+
+    // get submissions as non-moderator
+    const res = await client.getSubmissions();
+    expect(res.status).toBe(403);
+  });
+
+  test("should be able to filter for unmoderated only", async () => {
+    const client = createTestClient(app);
+
+    // submit some articles
+    await client.submitArticle({ body: { url: "https://example.com/posts/1" } });
+    await client.submitArticle({ body: { url: "https://example.com/posts/2" } });
+
+    // get unmoderated submissions as moderator
+    const moderatorClient = createTestClient(app, { moderator: true });
+    const res = await moderatorClient.getSubmissions({ query: { moderationStatus: "none" } });
+    expect(res.status).toBe(200);
+    expect(res.body.submissions.length).toBe(2);
+  });
 });
 
 describe("/submissions/:id/moderate", () => {
@@ -167,7 +190,7 @@ describe("/submissions/:id/moderate", () => {
     ["approving", { status: "approved" }],
     ["rejecting", { status: "rejected" }],
   ])("returns new status when %s", async ([desc, req]) => {
-    const client = createTestClient(app);
+    const client = createTestClient(app, { moderator: true });
 
     // submit an article
     const res1 = await client.submitArticle({
@@ -216,5 +239,18 @@ describe("/submissions/:id/moderate", () => {
     expect(res2.status).toBe(400);
   });
 
-  // TODO: should only be available to moderators
+  test("should only be available to moderators", async () => {
+    const client = createTestClient(app);
+
+    // submit an article
+    const res1 = await client.submitArticle({ body: { url: "https://example.com/posts/1" } });
+    assert(res1.status === 200, "should respond with 200");
+
+    // try to moderate as non-moderator
+    const res2 = await client.moderateSubmission({
+      params: { id: res1.body.id },
+      body: { status: "approved" },
+    });
+    expect(res2.status).toBe(403);
+  });
 });

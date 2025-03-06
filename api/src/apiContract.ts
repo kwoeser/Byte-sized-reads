@@ -6,6 +6,7 @@ const c = initContract();
 const userSchema = z.object({
   id: z.string().uuid(),
   username: z.string().optional(),
+  moderator: z.boolean(),
 });
 
 const articleSchema = z.object({
@@ -124,12 +125,14 @@ export const contract = c.router({
     path: "/submissions",
     query: z.object({
       cursor: z.string().nullish(),
+      moderationStatus: moderationStatusSchema.optional(),
     }),
     responses: {
       200: z.object({
         submissions: z.array(submissionSchema),
         cursor: z.string().nullable(),
       }),
+      403: z.string(),
     },
   },
 
@@ -150,6 +153,7 @@ export const contract = c.router({
     }),
     responses: {
       200: submissionSchema,
+      403: z.string(),
     },
   },
 });

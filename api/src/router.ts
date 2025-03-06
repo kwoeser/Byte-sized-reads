@@ -27,6 +27,7 @@ export const createRouter = (orm: MikroORM) => {
           body: {
             id: registerRes.ok.id,
             username: registerRes.ok.username,
+            moderator: registerRes.ok.moderator,
           },
         };
       }
@@ -49,6 +50,7 @@ export const createRouter = (orm: MikroORM) => {
           body: {
             id: loginRes.ok.id,
             username: loginRes.ok.username,
+            moderator: loginRes.ok.moderator,
           },
         };
       }
@@ -70,7 +72,7 @@ export const createRouter = (orm: MikroORM) => {
 
       return {
         status: 200,
-        body: { id: user.id, username: user.username },
+        body: { id: user.id, username: user.username, moderator: user.moderator },
       };
     },
 
@@ -129,6 +131,15 @@ export const createRouter = (orm: MikroORM) => {
     },
 
     getSubmissions: async ({ req, res }) => {
+      /*Taking this out allows the non moderators to use it and filter,
+        with it in only moderators can use it
+      */
+     
+      //const session = await validateSession(orm.em, req, res);
+      //if (!session) {
+      //  return { status: 401, body: "Unauthorized" };
+      //}
+
       const prevCursor = req.query.cursor ?? undefined;
       const submissions = await orm.em.findByCursor(
         Submission,
@@ -155,6 +166,17 @@ export const createRouter = (orm: MikroORM) => {
 
     moderateSubmission: async ({ req, res }) => {
       // TODO: check moderator status
+      const session = await validateSession(orm.em, req, res);
+      if (!session || !session.user.$.moderator) {  // Ensure the user is a moderator
+        return { status: 403, body: "Forbidden" };
+      }
+
+      if (!req.body.status || !["approved", "rejected"].includes(req.body.status)) {
+        return {
+          status: 400,
+          body: "Invalid status. Must be 'approved' or 'rejected'",
+        };
+      }
 
       const submission = await orm.em.findOne(Submission, {
         id: req.params.id,
