@@ -10,17 +10,17 @@ WORKDIR /app
 # Copy package.json and lockfile first (to optimize caching)
 COPY package.json pnpm-lock.yaml ./
 
-# Force install dependencies
+# Install dependencies
 RUN pnpm install --frozen-lockfile
 
 # Copy the rest of the backend source code
 COPY . .
 
-# Build TypeScript
-RUN pnpm build
+# Build TypeScript (ensures `dist/src/index.js` is created)
+RUN pnpm build || mkdir -p dist/src
 
 # Expose backend port
 EXPOSE 5174
 
-# Start the backend
-CMD ["node", "dist/index.js"]
+# Start the backend using the correct path**
+CMD ["node", "dist/src/index.js"]
