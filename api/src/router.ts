@@ -170,7 +170,6 @@ export const createRouter = (orm: MikroORM) => {
     },
 
     moderateSubmission: async ({ req, res }) => {
-      // TODO: check moderator status
       const session = await validateSession(orm.em, req, res);
       if (!session) {
         return { status: 401, body: "Unauthorized" };
@@ -179,7 +178,7 @@ export const createRouter = (orm: MikroORM) => {
     
       // Check if the user is a moderator
       if (!user.moderator) {
-        return { status: 403, body: "EETFUKSLP" }; 
+        return { status: 403, body: "Forbidden" }; 
       }
 
       if (!req.body.status || !["approved", "rejected"].includes(req.body.status)) {
