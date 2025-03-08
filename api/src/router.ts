@@ -131,14 +131,19 @@ export const createRouter = (orm: MikroORM) => {
     },
 
     getSubmissions: async ({ req, res }) => {
-      /*Taking this out allows the non moderators to use it and filter,
-        with it in only moderators can use it
-      */
-     
-      //const session = await validateSession(orm.em, req, res);
-      //if (!session) {
-      //  return { status: 401, body: "Unauthorized" };
-      //}
+      const session = await validateSession(orm.em, req, res);
+
+      if (!session) {
+        return { status: 401, body: "Unauthorized" };
+      }
+      
+      const user = session.user.$;
+      
+      // Check if the user is a moderator
+      if (!user.moderator) {
+        return { status: 403, body: "Forbidden" };
+      }
+      
 
       const prevCursor = req.query.cursor ?? undefined;
       const submissions = await orm.em.findByCursor(
@@ -167,8 +172,14 @@ export const createRouter = (orm: MikroORM) => {
     moderateSubmission: async ({ req, res }) => {
       // TODO: check moderator status
       const session = await validateSession(orm.em, req, res);
-      if (!session || !session.user.$.moderator) {  // Ensure the user is a moderator
-        return { status: 403, body: "Forbidden" };
+      if (!session) {
+        return { status: 401, body: "Unauthorized" };
+      }
+      const user = session.user.$;
+    
+      // Check if the user is a moderator
+      if (!user.moderator) {
+        return { status: 403, body: "EETFUKSLP" }; 
       }
 
       if (!req.body.status || !["approved", "rejected"].includes(req.body.status)) {

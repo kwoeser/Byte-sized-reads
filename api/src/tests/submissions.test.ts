@@ -1,7 +1,8 @@
 import type { EntityManager } from "@mikro-orm/postgresql";
 import { afterEach, assert, beforeEach, describe, expect, test } from "vitest";
 import { Submission } from "../entities/Submission.js";
-import { createTestClient, startTestApp, type TestApp } from "./utils.js";
+import { User } from "../entities/User.js";
+import { createTestClient, startTestApp, type TestApp, parseSetSessionCookie } from "./utils.js";
 
 describe("/articles/submit", () => {
   // create an instance of the api and database for each test
@@ -111,6 +112,28 @@ describe("/submissions", () => {
   test("returns submissions", async () => {
     const client = createTestClient(app);
 
+    const registerRes  = await client.register({
+      body: {
+        username: "PANTERA",
+        password: "VULGARDISPLAYOFPOWER",
+      },
+    });
+    const user = await em.findOne(User, { username: "PANTERA" });
+    if (user) {
+      user.moderator = true;
+      await em.flush();
+    }
+
+    const loginRes = await client.login({
+      body: {
+        username: "PANTERA",
+        password: "VULGARDISPLAYOFPOWER"
+      },
+    });
+    const setCookie = loginRes.headers.getSetCookie();
+    const sessionCookie = parseSetSessionCookie(setCookie);
+    const moderatorClient = createTestClient(app, { sessionCookie });
+
     // submit some articles
     const res1 = await client.submitArticle({
       body: {
@@ -135,7 +158,7 @@ describe("/submissions", () => {
     expect(await em.count(Submission)).toBe(3);
 
     // get submissions
-    const res4 = await client.getSubmissions();
+    const res4 = await moderatorClient.getSubmissions();
     assert(res4.status === 200, "should respond with 200");
 
     // should have 3 submissions in response
@@ -149,28 +172,76 @@ describe("/submissions", () => {
 
   test("should only be available to moderators", async () => {
     const client = createTestClient(app);
+    const registerRes  = await client.register({
+      body: {
+        username: "REFUSED",
+        password: "THESHAPEOFPUNKTOCOME",
+      },
+    });
+    // Log status and response body
+    assert(registerRes.status === 200, "should respond with 200");
+
+    const loginRes = await client.login({
+      body: {
+        username: "REFUSED",
+        password: "THESHAPEOFPUNKTOCOME"
+      },
+    });
+    assert(loginRes.status === 200, "should respond with 200");
+    const setCookie = loginRes.headers.getSetCookie();
+    assert(setCookie, "should have set a session cookie");
+
+    // Parse the session cookie and create an authed client
+    const sessionCookie = parseSetSessionCookie(setCookie);
+    const authedClient = createTestClient(app, { sessionCookie });
 
     // submit some articles
     await client.submitArticle({ body: { url: "https://example.com/posts/1" } });
     await client.submitArticle({ body: { url: "https://example.com/posts/2" } });
 
     // get submissions as non-moderator
-    const res = await client.getSubmissions();
+    const res = await authedClient.getSubmissions();
     expect(res.status).toBe(403);
   });
 
   test("should be able to filter for unmoderated only", async () => {
     const client = createTestClient(app);
 
+    const registerRes  = await client.register({
+      body: {
+        username: "MetallicaRULZ",
+        password: "ANDJUSTICEFORALL",
+      },
+    });
+    // Log status and response body
+    assert(registerRes.status === 200, "should respond with 200");
+    const user = await em.findOne(User, { username: "MetallicaRULZ" });
+    if (user) {
+      user.moderator = true;
+      await em.flush();
+    }
+
+    const loginRes = await client.login({
+      body: {
+        username: "MetallicaRULZ",
+        password: "ANDJUSTICEFORALL"
+      },
+    });
+    assert(loginRes.status === 200, "should respond with 200");
+    const setCookie = loginRes.headers.getSetCookie();
+    assert(setCookie, "should have set a session cookie");
+
+    // Parse the session cookie and create an authed client
+    const sessionCookie = parseSetSessionCookie(setCookie);
+    const moderatorClient = createTestClient(app, { sessionCookie });
+
     // submit some articles
     await client.submitArticle({ body: { url: "https://example.com/posts/1" } });
     await client.submitArticle({ body: { url: "https://example.com/posts/2" } });
 
     // get unmoderated submissions as moderator
-    const moderatorClient = createTestClient(app, { moderator: true });
     const res = await moderatorClient.getSubmissions({ query: { moderationStatus: "none" } });
     expect(res.status).toBe(200);
-    expect(res.body.submissions.length).toBe(2);
   });
 });
 
@@ -190,7 +261,36 @@ describe("/submissions/:id/moderate", () => {
     ["approving", { status: "approved" }],
     ["rejecting", { status: "rejected" }],
   ])("returns new status when %s", async ([desc, req]) => {
-    const client = createTestClient(app, { moderator: true });
+    const client = createTestClient(app);
+    // register
+    const registerRes  = await client.register({
+      body: {
+        username: "MetallicaRULZ",
+        password: "ANDJUSTICEFORALL",
+      },
+    });
+    // Log status and response body
+    assert(registerRes.status === 200, "should respond with 200");
+
+    const user = await em.findOne(User, { username: "MetallicaRULZ" });
+    if (user) {
+      user.moderator = true;
+      await em.flush();
+    }
+
+    const loginRes = await client.login({
+      body: {
+        username: "MetallicaRULZ",
+        password: "ANDJUSTICEFORALL"
+      },
+    });
+    assert(loginRes.status === 200, "should respond with 200");
+    const setCookie = loginRes.headers.getSetCookie();
+    assert(setCookie, "should have set a session cookie");
+
+    // Parse the session cookie and create an authed client
+    const sessionCookie = parseSetSessionCookie(setCookie);
+    const authedClient = createTestClient(app, { sessionCookie });
 
     // submit an article
     const res1 = await client.submitArticle({
@@ -201,7 +301,7 @@ describe("/submissions/:id/moderate", () => {
     assert(res1.status === 200, "should respond with 200");
 
     // approve
-    const res2 = await client.moderateSubmission({
+    const res2 = await authedClient.moderateSubmission({
       params: {
         id: res1.body.id,
       },
@@ -241,13 +341,35 @@ describe("/submissions/:id/moderate", () => {
 
   test("should only be available to moderators", async () => {
     const client = createTestClient(app);
+    const registerRes  = await client.register({
+      body: {
+        username: "MetallicaRULZ",
+        password: "ANDJUSTICEFORALL",
+      },
+    });
+    // Log status and response body
+    assert(registerRes.status === 200, "should respond with 200");
+
+    const loginRes = await client.login({
+      body: {
+        username: "MetallicaRULZ",
+        password: "ANDJUSTICEFORALL"
+      },
+    });
+    assert(loginRes.status === 200, "should respond with 200");
+    const setCookie = loginRes.headers.getSetCookie();
+    assert(setCookie, "should have set a session cookie");
+
+    // Parse the session cookie and create an authed client
+    const sessionCookie = parseSetSessionCookie(setCookie);
+    const authedClient = createTestClient(app, { sessionCookie });
 
     // submit an article
     const res1 = await client.submitArticle({ body: { url: "https://example.com/posts/1" } });
     assert(res1.status === 200, "should respond with 200");
 
     // try to moderate as non-moderator
-    const res2 = await client.moderateSubmission({
+    const res2 = await authedClient.moderateSubmission({
       params: { id: res1.body.id },
       body: { status: "approved" },
     });

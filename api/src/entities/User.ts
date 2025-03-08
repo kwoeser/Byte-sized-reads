@@ -9,8 +9,8 @@ export class User extends BaseEntity {
   @Property()
   passwordHash!: string;
 
-  @Property({ default: false }) // Add this to mark a user as a moderator or not
-  moderator!: boolean;
+  @Property() // Add this to mark a user as a moderator or not
+  moderator: boolean = false;
 
   constructor(username: string, passwordHash: string, moderator: boolean = false) {
     super();

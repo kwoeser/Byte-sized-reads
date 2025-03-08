@@ -11,7 +11,8 @@
     "dev:tsc": "tsc --watch --preserveWatchOutput",
     "dev:node": "node --enable-source-maps --watch dist/src/index.js",
     "dev": "pnpm run --stream \"/dev:/\"",
-    "test": "vitest"
+    "test": "vitest",
+    "setModeratorStatus": "ts-node setModeratorStatus.ts"
   },
   "dependencies": {
     "@mikro-orm/core": "^6.4.4",
