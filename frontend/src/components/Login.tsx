@@ -1,15 +1,12 @@
-import React from 'react'
 
-type Props = {}
-
-const Login = (props: Props) => {
+const Login = () => {
   return (
     <div>
       
-      <button className="bg-green-600 hover:bg-black text-white px-4 py-2 rounded-lg">
+      <button className="bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
         Login
       </button> 
-    
+  
     
     </div>
   )

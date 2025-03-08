@@ -1,4 +1,3 @@
-import React from 'react';
 
 const ConnectionError = ({ onRetry }: { onRetry: () => void }) => {
     return (

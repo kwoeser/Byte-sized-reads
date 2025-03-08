@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App.tsx";
@@ -9,22 +9,35 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 // https://ts-rest.com/docs/react-query/v4
 const queryClient = new QueryClient();
 
+function Main() {
+  // state for filters
+  const [filters, setFilters] = useState<{ category: string | null; readingTime: string | null }>({
+    category: null,
+    readingTime: null,
+  });
+
+  const handleFilterChange = (newFilters: { category: string | null; readingTime: string | null }) => {
+    console.log("new filters updates:", newFilters); 
+    setFilters(newFilters);
+  };
+
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        {/* Pass handleFilterChange to Navbar */}
+        <Navbar onFilterChange={handleFilterChange} />
+        <div className="pt-20">
+          <App filters={filters} />
+        </div>
+      </BrowserRouter>
+    </QueryClientProvider>
+  );
+}
+
+
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-
-    <QueryClientProvider client={queryClient}>
-
-        <BrowserRouter>
-
-          
-            <Navbar/>
-              <div className="pt-20">
-                <App />
-              </div>
-
-        </BrowserRouter>
-
-
-    </QueryClientProvider>
+    <Main />
   </React.StrictMode>
 );

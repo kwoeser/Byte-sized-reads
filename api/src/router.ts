@@ -84,6 +84,8 @@ export const createRouter = (orm: MikroORM) => {
         {
           first: 10,
           after: prevCursor,
+          // mikroORM needs a specific orderBy otherwise theres a error on backend  
+          orderBy: { createdAt: 'DESC' }  
         }
       );
 

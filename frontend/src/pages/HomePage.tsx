@@ -1,60 +1,43 @@
-import { useQuery } from "@ts-rest/react-query";
 import { apiClient } from "../Connection"; 
-import React from "react";
-import { useState } from "react";
-import DropdownFilter from "../components/DropdownFilter";
-import LoadingSpinner from "../components/LoadingSpinner";
-import ConnectionError from "../components/ConnectionError";
+import ArticleDisplay from "../components/ArticleDisplay";
+import { useNavigate } from "react-router-dom";
 
 // https://ts-rest.com/docs/react-query/v4
-const HomePage = () => {
-
-  // State for filters
-  const [filters, setFilters] = useState<{ category: string | null; readingTime: string | null }>({
-    category: null,
-    readingTime: null,
-  });
-
+const HomePage = ({ filters }: { filters: { category: string | null; readingTime: string | null } }) => {
+  const navigate = useNavigate();
   // GET /user, grabs user data after validation
-  const { data: userData, isLoading: userIsLoading, error: userError, refetch } = apiClient.getUser.useQuery(
-    ["getUser"]
+  const { data: userData, isLoading: userIsLoading, error: userError } = apiClient.getUser.useQuery(
+    ["getUser"], 
   );
 
-  const handleFilterChange = (newFilters: { category: string | null; readingTime: string | null }) => {
-    setFilters(newFilters);
-  };
-
-  const handleRetry = () => {
-    refetch();
-  };
-
-
-  if (userIsLoading) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <LoadingSpinner />
-      </div>
-    );
-  }
-
-  if (userData?.status !== 200) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <ConnectionError onRetry={handleRetry} />
-      </div>
-    );
-  }
+  // to check if the backend is down
+  const isBackendDown = userError?.message?.includes("Failed to fetch");
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="ml-72">
-        <h1 className="text-3xl font-semibold text-gray-800">HomePage</h1>
+    <div className="container mx-auto px-4 py-4">
+      <div className="px-4">
+        <div className="flex justify-between items-center mb-4">
+          <h1 className="text-3xl font-bold text-gray-800">Find Your Article</h1>
 
-        {userData?.body?.username ? (
-          <h1 className="text-lg text-gray-700">User: {userData.body.username}</h1>
-        ) : (
-          <h1 className="text-lg text-red-500">Error getting user</h1>
+          {/* article submissions */}
+          <button onClick={() => navigate("/submit")}
+            className="px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-700"
+          >
+            Submit an Article
+          </button>
+
+        </div>
+
+        <p className="text-md text-gray-600 mt-2">
+          Apply filters to find your desired articles.
+        </p>
+     
+
+        {/* Only load articles if backend is up */}
+        {!isBackendDown && (
+          <ArticleDisplay filters={filters} />
         )}
+  
 
       </div>
 

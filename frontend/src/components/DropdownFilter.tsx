@@ -75,7 +75,7 @@ const DropdownFilter = ({ onFilterChange }: { onFilterChange: (filters: any) => 
                       px-3 py-1 rounded-full text-sm font-medium transition-all duration-200
                       ${
                         selectedCategory === category
-                          ? "bg-primary text-white"
+                          ? "bg-green-500 text-white" 
                           : "bg-neutral-100 text-neutral-700 hover:bg-neutral-200"
                       }
                     `}
@@ -98,7 +98,7 @@ const DropdownFilter = ({ onFilterChange }: { onFilterChange: (filters: any) => 
                       px-3 py-1 rounded-full text-sm font-medium transition-all duration-200
                       ${
                         selectedTime === time
-                          ? "bg-primary text-white"
+                          ? "bg-green-500 text-white" 
                           : "bg-neutral-100 text-neutral-700 hover:bg-neutral-200"
                       }
                     `}
