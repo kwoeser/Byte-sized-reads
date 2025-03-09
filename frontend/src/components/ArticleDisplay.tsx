@@ -48,16 +48,17 @@ function ArticleDisplay({ filters, searchQuery }: { filters: { category: string 
     const { data: userData } = apiClient.getUser.useQuery(["getUser"]);
     const isLoggedIn = !!userData?.body?.id; 
 
-    // Should work when backend is created, commented out for now
+    
     // MIGHT NOT USE SAVE ARTICLES, ONLY MARK AS READ UP TO BACKEND AND TIME
-
+    // Should work when backend is created, commented out for now
+    
     // const saveMutation = apiClient.saveArticle.useMutation();
     // const markAsReadMutation = apiClient.markAsRead.useMutation();
 
-    
+
     // state for tracking bookmarked and favorited articles
     const [favorites, setFavorites] = useState<{ [key: string]: boolean }>({});
-    const [bookmarks, setBookmarks] = useState<{ [key: string]: boolean }>({});
+    const [read, setRead] = useState<{ [key: string]: boolean }>({});
 
     const toggleFavorite = (articleId: string) => {
         setFavorites((prev) => ({
@@ -66,8 +67,8 @@ function ArticleDisplay({ filters, searchQuery }: { filters: { category: string 
         }));
     };
 
-    const toggleBookmark = (articleId: string) => {
-        setBookmarks((prev) => ({
+    const toggleRead = (articleId: string) => {
+        setRead((prev) => ({
             ...prev,
             [articleId]: !prev[articleId],
         }));
@@ -117,11 +118,11 @@ function ArticleDisplay({ filters, searchQuery }: { filters: { category: string 
 
                             <button 
                                 className="text-gray-800 hover:text-gray-600"
-                                onClick={() => toggleBookmark(article.id)}
+                                onClick={() => toggleRead(article.id)}
                             >
                                 <EyeIcon
                                     className="w-6 h-6"  
-                                    fill={bookmarks[article.id] ? "gold" : "none"}
+                                    fill={read[article.id] ? "gold" : "none"}
                                 />
                             </button>
                             
