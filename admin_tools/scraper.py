@@ -4,10 +4,28 @@ from readabilipy import simple_json_from_html_string
 from urllib.parse import urlparse
 import psycopg2
 import time
+import signal
+import sys
+import getpass
 
 DB_URL = "postgres://postgres:G6NnIXtBWhhlT9v@137.66.20.78:5432/project"
+#Kill swtich
+running = True
+password = "confirm"
+
 filepath = os.path.join(r"C:\Users\sellis12\VSCode\BossModeP2\admin_tools", "articles.txt")
 
+
+def kill(sig, frame):
+    global running
+    pword = getpass.getpass("Enter Password: ")
+    if pword == password:
+        print("Terminated scraper")
+        running = False
+    else:
+        print("Incorrect")
+
+signal.signal(signal.SIGINT, kill)
 
 def db_connect():
     """Connect to Progres Database"""
@@ -18,6 +36,7 @@ def db_connect():
         print(f"Error connecting to database: {e}")
         return None
     
+
 def scrape_article(id, url):
     """Scrape an approved article and store in Progres"""
     try:
@@ -51,7 +70,8 @@ def scrape_article(id, url):
 
 def ao_loop():
     """Create an always on loop"""
-    while True:
+    global running
+    while running:
         conn = db_connect()
         if conn:
             try:
@@ -61,23 +81,29 @@ def ao_loop():
 
                 if rows:
                     for id, url in rows:
+                        if not running:
+                            break
                         scrape_article(id, url)
 
                 else:
-                    print("No articles, Sleeping... ")
-                    time.sleep(30)
+                    if running:
+                        print("No articles, Sleeping... ")
+                        time.sleep(30)
 
             except psycopg2.Error as e:
-                print(f"Error calling loop: {e}") 
+                if running:
+                    print(f"Error calling loop: {e}") 
             finally:
-                cursor.close()
-                conn.close()
+                if conn:
+                    cursor.close()
+                    conn.close()
             
         else:
-            print("Database connection failure, Sleeping... ")
-            time.sleep(30)
-    
-
+            if running:
+                print("Database connection failure, Sleeping... ")
+                time.sleep(30)
+        
+    print("Scraper Killed")
 
 
 def test_articles():
