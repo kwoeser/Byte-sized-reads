@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 // https://ts-rest.com/docs/react-query/v4
 const HomePage = ({ filters }: { filters: { category: string | null; readingTime: string | null } }) => {
   const navigate = useNavigate();
+  
   // GET /user, grabs user data after validation
   const { data: userData, isLoading: userIsLoading, error: userError } = apiClient.getUser.useQuery(
     ["getUser"], 
@@ -29,7 +30,7 @@ const HomePage = ({ filters }: { filters: { category: string | null; readingTime
         </div>
 
         <p className="text-md text-gray-600 mt-2">
-          Apply filters to find your desired articles.
+          Apply filters to find your desired article.
         </p>
      
 
