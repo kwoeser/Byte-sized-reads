@@ -147,10 +147,20 @@ export const createRouter = (orm: MikroORM) => {
         bookmarkSet = new Set(bookmarkRows.map((r) => r.id));
       }
 
+      // filter articles if read
+      let filteredArticles;
+      if (user && req.query.hideRead === "true") {
+        filteredArticles = articles.items.filter(
+          (a) => !readStatusSet.has(a.id)
+        );
+      } else {
+        filteredArticles = articles.items;
+      }
+
       return {
         status: 200,
         body: {
-          articles: articles.items.map((a) => ({
+          articles: filteredArticles.map((a) => ({
             id: a.id,
             url: a.url,
             siteName: a.siteName,
