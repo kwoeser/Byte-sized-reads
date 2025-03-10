@@ -12,7 +12,7 @@ export class Article extends BaseEntity {
   @Property()
   title!: string;
 
-  @Property()
+  @Property({ length: 8192 })
   excerpt!: string;
 
   @Property()
