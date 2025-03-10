@@ -89,6 +89,14 @@ const ModeratorPage = () => {
     }
   };
 
+  if (error) {
+    return <div className="p-4 text-red-500">{error}</div>;
+  }
+
+  if (loading) {
+    return <div className="p-4">Loading...</div>;
+  }
+  
   return (
     <div className="p-4">
       <h2 className="text-2xl font-semibold mb-4">Article Submissions </h2>
