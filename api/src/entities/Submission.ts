@@ -12,7 +12,7 @@ export class Submission extends BaseEntity {
   @Property({ unique: true })
   url!: string;
 
-  @Property()
+  @Property({ default: "" })
   category!: string;
 
   @Enum({ items: () => ModerationStatus })

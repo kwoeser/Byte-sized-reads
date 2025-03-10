@@ -18,7 +18,7 @@ export class Article extends BaseEntity {
   @Property()
   wordCount!: number;
 
-  @Property()
+  @Property({ default: "" })
   category!: string;
 
   constructor(
