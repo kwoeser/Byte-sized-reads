@@ -1,5 +1,5 @@
 import { useState } from "react";
-import ArticleDisplay from "../components/ArticleDisplay"; 
+import ArticleDisplay from "../components/ArticleDisplay";
 
 const Library = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -8,7 +8,9 @@ const Library = () => {
     <div className="container mx-auto px-4 py-6">
       <div className=" rounded-lg mb-8 text-center">
         <h1 className="text-4xl font-bold text-gray-800 mb-2">Library</h1>
-        <p className="text-lg text-gray-600">Search for any article in our library.</p>
+        <p className="text-lg text-gray-600">
+          Search for any article in our library.
+        </p>
       </div>
 
       {/* Search Bar */}
@@ -22,8 +24,10 @@ const Library = () => {
         />
       </div>
 
-      <ArticleDisplay filters={{ category: null, readingTime: null }} searchQuery={searchQuery} />
-      
+      <ArticleDisplay
+        filters={{ category: null, length: null }}
+        searchQuery={searchQuery}
+      />
     </div>
   );
 };
