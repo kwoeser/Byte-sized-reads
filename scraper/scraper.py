@@ -38,7 +38,7 @@ def db_connect():
         return None
     
 
-def scrape_article(submission_id, url):
+def scrape_article(submission_id, url, category):
     """Scrape an approved article and store in Progres"""
     try:
         req = requests.get(url)
@@ -52,8 +52,8 @@ def scrape_article(submission_id, url):
         if conn:
             try:
                 cursor = conn.cursor()
-                cursor.execute("INSERT INTO article (id, created_at, updated_at, url, site_name, title, excerpt, word_count) VALUES (%s, current_timestamp, current_timestamp, %s, %s, %s, '', %s)",
-                            (str(uuid.uuid4()), url, site_name, article['title'], word_count,))
+                cursor.execute("INSERT INTO article (id, created_at, updated_at, url, site_name, title, excerpt, word_count, category) VALUES (%s, current_timestamp, current_timestamp, %s, %s, %s, '', %s, %s)",
+                            (str(uuid.uuid4()), url, site_name, article['title'], word_count, category,))
                 cursor.execute("UPDATE submission SET scraped = true WHERE id = %s", (submission_id,))
                 conn.commit()
                 print(f"Article scraped: {url}")
@@ -67,8 +67,8 @@ def scrape_article(submission_id, url):
         else:
             print(f"Cannot Scrape Article {url}")
     
-    except requests.exceptions.RequestException as e:
-        print(f"Error fetching {e}")
+    except Exception as e:
+        print(f"Error fetching: {e}")
 
         # set scraped to true anyway so we don't redo it
         conn = db_connect()
@@ -92,14 +92,14 @@ def ao_loop():
         if conn:
             try:
                 cursor = conn.cursor()
-                cursor.execute("SELECT id, url FROM submission WHERE moderation_status = %s AND scraped = %s", ("approved", False))
+                cursor.execute("SELECT id, url, category FROM submission WHERE moderation_status = %s AND scraped = %s", ("approved", False))
                 rows = cursor.fetchall()
 
                 if rows:
-                    for submission_id, url in rows:
+                    for submission_id, url, category in rows:
                         if not running:
                             break
-                        scrape_article(submission_id, url)
+                        scrape_article(submission_id, url, category)
 
                 else:
                     if running:
