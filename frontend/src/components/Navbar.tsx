@@ -1,41 +1,47 @@
-import { Link } from "react-router-dom";
+import { Book, Bookmark, Home, ShieldCheck } from "lucide-react";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { apiClient } from "../Connection";
+import { FilterState } from "../types";
 import DropdownFilter from "./DropdownFilter";
 import LogoutButton from "./LogoutButton";
-import { Home, Book, ShieldCheck, Bookmark } from "lucide-react";
 
-const Navbar = ({ onFilterChange }: { onFilterChange: (filters: { category: string | null; readingTime: string | null }) => void }) => {
-  
+const Navbar = ({
+  onFilterChange,
+}: {
+  onFilterChange: (filters: FilterState) => void;
+}) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [username, setUsername] = useState("");
   const [isModerator, setIsModerator] = useState(false);
 
   // fetch user session status
-  const { data } = apiClient.getUser.useQuery(["getUser"], {}, {
-    onSuccess: (data) => {
-      if (data?.status === 200) {
-        setIsLoggedIn(true);
-        setUsername(data.body.username);
-        setIsModerator(data.body.moderator || false);
-      } else {
+  apiClient.getUser.useQuery(
+    ["getUser"],
+    {},
+    {
+      onSuccess: (data) => {
+        if (data?.status === 200) {
+          setIsLoggedIn(true);
+          setUsername(data.body.username);
+          setIsModerator(data.body.moderator || false);
+        } else {
+          setIsLoggedIn(false);
+          setUsername("");
+          setIsModerator(false);
+        }
+      },
+      onError: () => {
         setIsLoggedIn(false);
         setUsername("");
         setIsModerator(false);
-      }
-    },
-    onError: () => {
-      setIsLoggedIn(false);
-      setUsername("");
-      setIsModerator(false)
-;    },
-  });
-
+      },
+    }
+  );
 
   return (
     <nav className="fixed w-full bg-white text-black shadow-md border-b border-gray-100">
       <div className="flex items-center justify-between px-8 py-3">
-
         {/* Left side */}
         <div className="flex items-center space-x-10">
           <Link to="/" className="flex items-center hover:text-red-500">
@@ -46,27 +52,29 @@ const Navbar = ({ onFilterChange }: { onFilterChange: (filters: { category: stri
             <Book className="mr-2" size={18} />
             <span>Our Library</span>
           </Link>
-          
-          <DropdownFilter onFilterChange={onFilterChange}/>
+
+          <DropdownFilter onFilterChange={onFilterChange} />
           {/* Moderator Link (Conditional) */}
           {isLoggedIn && isModerator && (
-            <Link to="/ModeratorPage" className="flex items-center hover:text-red-500">
+            <Link
+              to="/ModeratorPage"
+              className="flex items-center hover:text-red-500"
+            >
               <ShieldCheck className="mr-2" size={18} />
               <span>Moderator</span>
             </Link>
           )}
-
-          
-
         </div>
-       
+
         {/* Right side, Login or Logout */}
         {/* bug: login shows for a split second when you reload page. */}
         <div className="flex items-center space-x-10">
-          
           {/* bookmarks tab only if user is logged in */}
           {isLoggedIn && (
-            <Link to="/BookmarkPage" className="flex items-center hover:text-red-500">
+            <Link
+              to="/BookmarkPage"
+              className="flex items-center hover:text-red-500"
+            >
               <Bookmark className="mr-2" size={18} />
               <span>Bookmarks</span>
             </Link>
@@ -75,7 +83,7 @@ const Navbar = ({ onFilterChange }: { onFilterChange: (filters: { category: stri
           {isLoggedIn ? (
             <div className="flex items-center space-x-4">
               <span className="text-gray-700">Welcome, {username}</span>
-              <LogoutButton /> 
+              <LogoutButton />
             </div>
           ) : (
             <Link to="/LoginPage">
@@ -85,11 +93,9 @@ const Navbar = ({ onFilterChange }: { onFilterChange: (filters: { category: stri
             </Link>
           )}
         </div>
-
       </div>
     </nav>
   );
 };
 
 export default Navbar;
-

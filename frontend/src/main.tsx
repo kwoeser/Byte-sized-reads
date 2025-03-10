@@ -5,22 +5,22 @@ import App from "./App.tsx";
 import "./index.css";
 import Navbar from "./components/Navbar.tsx";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { FilterState } from "./types.ts";
 
 // https://ts-rest.com/docs/react-query/v4
 const queryClient = new QueryClient();
 
 function Main() {
   // state for filters
-  const [filters, setFilters] = useState<{ category: string | null; readingTime: string | null }>({
+  const [filters, setFilters] = useState<FilterState>({
     category: null,
-    readingTime: null,
+    length: null,
   });
 
-  const handleFilterChange = (newFilters: { category: string | null; readingTime: string | null }) => {
-    console.log("new filters updates:", newFilters); 
+  const handleFilterChange = (newFilters: FilterState) => {
+    console.log("new filters updates:", newFilters);
     setFilters(newFilters);
   };
-
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -34,7 +34,6 @@ function Main() {
     </QueryClientProvider>
   );
 }
-
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>

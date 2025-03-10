@@ -5,8 +5,9 @@ import LoginPage from "./pages/LoginPage";
 import SubmitArticle from "./pages/SubmitArticle";
 import ModeratorPage from "./pages/ModeratorPage";
 import BookmarkPage from "./pages/BookmarkPage";
+import { FilterState } from "./types";
 
-function App({ filters }: { filters: { category: string | null; readingTime: string | null } }) {
+function App({ filters }: { filters: FilterState }) {
   return (
     <Routes>
       <Route path="/" element={<HomePage filters={filters} />} />
@@ -15,7 +16,6 @@ function App({ filters }: { filters: { category: string | null; readingTime: str
       <Route path="/Submit" element={<SubmitArticle />} />
       <Route path="/BookmarkPage" element={<BookmarkPage />} />
       <Route path="/ModeratorPage" element={<ModeratorPage />} />
-
     </Routes>
   );
 }

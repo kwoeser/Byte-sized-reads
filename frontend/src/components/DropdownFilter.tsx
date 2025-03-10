@@ -1,36 +1,48 @@
-import { useState } from "react";
 import { ChevronDown, Filter, X } from "lucide-react";
+import { useState } from "react";
+import {
+  categories,
+  Category,
+  FilterState,
+  ReadingTime,
+  readingTimes,
+} from "../types";
 
-const categories = ["Technology", "Travel", "Video Games"];
-const readingTimes = ["Short (< 5 min)", "Medium (5-15 min)", "Long (> 15 min)"];
-
-const DropdownFilter = ({ onFilterChange }: { onFilterChange: (filters: any) => void }) => {
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [selectedTime, setSelectedTime] = useState<string | null>(null);
+const DropdownFilter = ({
+  onFilterChange,
+}: {
+  onFilterChange: (filters: FilterState) => void;
+}) => {
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(
+    null
+  );
+  const [selectedTime, setSelectedTime] = useState<ReadingTime | null>(null);
   const [isHovered, setIsHovered] = useState(false);
 
-  const handleCategoryChange = (category: string) => {
+  const handleCategoryChange = (category: Category) => {
     const newCategory = selectedCategory === category ? null : category;
     setSelectedCategory(newCategory);
-    onFilterChange({ category: newCategory, readingTime: selectedTime });
+    onFilterChange({ category: newCategory, length: selectedTime });
   };
 
-  const handleTimeChange = (time: string) => {
+  const handleTimeChange = (time: ReadingTime) => {
     const newTime = selectedTime === time ? null : time;
     setSelectedTime(newTime);
-    onFilterChange({ category: selectedCategory, readingTime: newTime });
+    onFilterChange({ category: selectedCategory, length: newTime });
   };
 
   const clearFilters = () => {
     setSelectedCategory(null);
     setSelectedTime(null);
-    onFilterChange({ category: null, readingTime: null });
+    onFilterChange({ category: null, length: null });
   };
 
-  const activeFiltersCount = [selectedCategory, selectedTime].filter(Boolean).length;
+  const activeFiltersCount = [selectedCategory, selectedTime].filter(
+    Boolean
+  ).length;
 
   return (
-    <div 
+    <div
       className="relative inline-block"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -43,7 +55,12 @@ const DropdownFilter = ({ onFilterChange }: { onFilterChange: (filters: any) => 
             {activeFiltersCount}
           </span>
         )}
-        <ChevronDown size={16} className={`ml-2 transition-transform ${isHovered ? 'rotate-180' : ''}`} />
+        <ChevronDown
+          size={16}
+          className={`ml-2 transition-transform ${
+            isHovered ? "rotate-180" : ""
+          }`}
+        />
       </button>
 
       {isHovered && (
@@ -54,7 +71,7 @@ const DropdownFilter = ({ onFilterChange }: { onFilterChange: (filters: any) => 
                 Filters
               </h3>
               {(selectedCategory || selectedTime) && (
-                <button 
+                <button
                   onClick={clearFilters}
                   className="text-neutral-600 hover:text-neutral-900 transition-colors"
                 >
@@ -65,22 +82,24 @@ const DropdownFilter = ({ onFilterChange }: { onFilterChange: (filters: any) => 
 
             {/* Category Filter */}
             <div className="mb-4">
-              <h4 className="text-sm font-medium text-neutral-700 mb-2">Category</h4>
+              <h4 className="text-sm font-medium text-neutral-700 mb-2">
+                Category
+              </h4>
               <div className="flex flex-wrap gap-2">
-                {categories.map((category) => (
+                {Object.entries(categories).map(([category, categoryLabel]) => (
                   <button
                     key={category}
-                    onClick={() => handleCategoryChange(category)}
+                    onClick={() => handleCategoryChange(category as Category)}
                     className={`
                       px-3 py-1 rounded-full text-sm font-medium transition-all duration-200
                       ${
                         selectedCategory === category
-                          ? "bg-green-500 text-white" 
+                          ? "bg-green-500 text-white"
                           : "bg-neutral-100 text-neutral-700 hover:bg-neutral-200"
                       }
                     `}
                   >
-                    {category}
+                    {categoryLabel}
                   </button>
                 ))}
               </div>
@@ -88,29 +107,31 @@ const DropdownFilter = ({ onFilterChange }: { onFilterChange: (filters: any) => 
 
             {/* Reading Time Filter */}
             <div>
-              <h4 className="text-sm font-medium text-neutral-700 mb-2">Reading Time</h4>
+              <h4 className="text-sm font-medium text-neutral-700 mb-2">
+                Reading Time
+              </h4>
               <div className="flex flex-wrap gap-2">
-                {readingTimes.map((time) => (
+                {Object.entries(readingTimes).map(([time, timeLabel]) => (
                   <button
                     key={time}
-                    onClick={() => handleTimeChange(time)}
+                    onClick={() => handleTimeChange(time as ReadingTime)}
                     className={`
                       px-3 py-1 rounded-full text-sm font-medium transition-all duration-200
                       ${
                         selectedTime === time
-                          ? "bg-green-500 text-white" 
+                          ? "bg-green-500 text-white"
                           : "bg-neutral-100 text-neutral-700 hover:bg-neutral-200"
                       }
                     `}
                   >
-                    {time}
+                    {timeLabel}
                   </button>
                 ))}
               </div>
             </div>
+          </div>
         </div>
-     </div>
-    )}
+      )}
     </div>
   );
 };
