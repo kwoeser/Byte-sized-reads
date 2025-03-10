@@ -95,11 +95,27 @@ export const createRouter = (orm: MikroORM) => {
       const session = await validateSession(orm.em, req, res);
       const user = session?.user?.$;
 
+      // for length filter, filter by word count
+      // assume average WPM is ~200
+      let wordCountFilter;
+      if (req.query.length === "short") {
+        wordCountFilter = { $lt: 1000 };
+      } else if (req.query.length === "medium") {
+        wordCountFilter = { $gt: 1000, $lt: 3000 };
+      } else if (req.query.length === "long") {
+        wordCountFilter = { $gt: 3000 };
+      }
+
+      let categoryFilter = req.query.category;
+
       // get articles
       const prevCursor = req.query.cursor ?? undefined;
       const articles = await orm.em.findByCursor(
         Article,
-        {},
+        {
+          ...(wordCountFilter ? { wordCount: wordCountFilter } : {}),
+          ...(categoryFilter ? { category: categoryFilter } : {}),
+        },
         {
           first: ARTICLES_PER_PAGE,
           after: prevCursor,

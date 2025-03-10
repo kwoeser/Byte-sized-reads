@@ -9,7 +9,8 @@ const userSchema = z.object({
   moderator: z.boolean(),
 });
 
-const categorySchema = z.enum(["technology", "travel", "video games"]);
+const categoryFilterSchema = z.enum(["technology", "travel", "video games"]);
+const lengthFilterSchema = z.enum(["short", "medium", "long"]);
 
 const articleSchema = z.object({
   id: z.string().uuid(),
@@ -93,6 +94,8 @@ export const contract = c.router({
     path: "/articles",
     query: z.object({
       cursor: z.string().optional(),
+      category: categoryFilterSchema.optional(),
+      length: lengthFilterSchema.optional(),
     }),
     responses: {
       200: z.object({
@@ -111,7 +114,7 @@ export const contract = c.router({
     path: "/articles/submit",
     body: z.object({
       url: z.string().url(),
-      category: categorySchema,
+      category: categoryFilterSchema,
     }),
     responses: {
       200: submissionSchema,
