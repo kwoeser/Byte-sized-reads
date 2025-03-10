@@ -7,7 +7,7 @@ const LoadingSpinner = () => {
         <div className="text-lg font-medium text-neutral-700">Loading...</div>
         
         {/* Add the keyframes animation */}
-        <style jsx>{`
+        <style>{`
           @keyframes loading {
             0% { width: 0%; }
             50% { width: 100%; }

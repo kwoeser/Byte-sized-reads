@@ -11,9 +11,6 @@ const HomePage = ({ filters }: { filters: { category: string | null; readingTime
     ["getUser"], 
   );
 
-  // to check if the backend is down
-  const isBackendDown = userError?.message?.includes("Failed to fetch");
-
   return (
     <div className="container mx-auto px-4 py-4">
       <div className="px-4">
@@ -34,10 +31,7 @@ const HomePage = ({ filters }: { filters: { category: string | null; readingTime
         </p>
      
 
-        {/* Only load articles if backend is up */}
-        {!isBackendDown && (
-          <ArticleDisplay filters={filters} />
-        )}
+        <ArticleDisplay filters={filters} />
   
 
       </div>

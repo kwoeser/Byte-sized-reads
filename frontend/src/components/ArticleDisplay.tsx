@@ -27,7 +27,6 @@ function ArticleDisplay({ filters, searchQuery }: { filters: { category: string 
             return { query: queryParams };
         },
         {
-            initialPageParam: null,
             getNextPageParam: (lastPage) => {
                 console.log("next page cursor is:", lastPage.body.cursor);
                 return lastPage.body.cursor || undefined;

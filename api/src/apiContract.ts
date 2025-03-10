@@ -5,7 +5,7 @@ const c = initContract();
 
 const userSchema = z.object({
   id: z.string().uuid(),
-  username: z.string().optional(),
+  username: z.string(),
   moderator: z.boolean(),
 });
 
