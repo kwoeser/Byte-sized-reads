@@ -6,8 +6,6 @@ services:
       - "5174:5174"
     environment:
       - DATABASE_URL=postgresql://postgres:mypassword@db:5432/project
-    env_file:
-      - ./api/.env
     depends_on:
       db:
         condition: service_healthy
@@ -22,7 +20,6 @@ services:
       - "5173:5173"
     depends_on:
       - backend
-
     networks:
       - bossmode2_network
 
@@ -45,6 +42,16 @@ services:
       interval: 5s
       retries: 5
       start_period: 10s
+  
+  scraper:
+    build: ./scraper
+    environment:
+      - DATABASE_URL=postgresql://postgres:mypassword@db:5432/project
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - bossmode2_network
 
 networks:
   bossmode2_network:
