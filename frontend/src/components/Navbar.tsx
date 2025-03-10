@@ -3,12 +3,13 @@ import { useState } from "react";
 import { apiClient } from "../Connection";
 import DropdownFilter from "./DropdownFilter";
 import LogoutButton from "./LogoutButton";
-import { Home, Book } from "lucide-react";
+import { Home, Book, ShieldCheck } from "lucide-react";
 
 const Navbar = ({ onFilterChange }: { onFilterChange: (filters: { category: string | null; readingTime: string | null }) => void }) => {
   
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [username, setUsername] = useState("");
+  const [isModerator, setIsModerator] = useState(false);
 
   // fetch user session status
   const { data } = apiClient.getUser.useQuery(["getUser"], {}, {
@@ -16,15 +17,18 @@ const Navbar = ({ onFilterChange }: { onFilterChange: (filters: { category: stri
       if (data?.status === 200) {
         setIsLoggedIn(true);
         setUsername(data.body.username);
+        setIsModerator(data.body.moderator || false);
       } else {
         setIsLoggedIn(false);
         setUsername("");
+        setIsModerator(false);
       }
     },
     onError: () => {
       setIsLoggedIn(false);
       setUsername("");
-    },
+      setIsModerator(false)
+;    },
   });
 
 
@@ -44,6 +48,13 @@ const Navbar = ({ onFilterChange }: { onFilterChange: (filters: { category: stri
           </Link>
           
           <DropdownFilter onFilterChange={onFilterChange}/>
+          {/* Moderator Link (Conditional) */}
+          {isLoggedIn && isModerator && (
+            <Link to="/ModeratorPage" className="flex items-center hover:text-red-500">
+              <ShieldCheck className="mr-2" size={18} />
+              <span>Moderator</span>
+            </Link>
+          )}
         </div>
        
         {/* Right side, Login or Logout */}
@@ -70,3 +81,4 @@ const Navbar = ({ onFilterChange }: { onFilterChange: (filters: { category: stri
 };
 
 export default Navbar;
+
