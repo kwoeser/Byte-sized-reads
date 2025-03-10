@@ -1,6 +1,6 @@
 import { apiClient } from "../Connection";
 import LoadingSpinner from "./LoadingSpinner";
-import { Star, Bookmark, EyeIcon } from "lucide-react";
+import { EyeIcon, Bookmark } from "lucide-react";
 import { useState } from "react";
 
 function ArticleDisplay({ filters, searchQuery }: { filters: { category: string | null; readingTime: string | null }, searchQuery?: string}) {    
@@ -28,7 +28,6 @@ function ArticleDisplay({ filters, searchQuery }: { filters: { category: string 
         },
         {
             getNextPageParam: (lastPage) => {
-                console.log("next page cursor is:", lastPage.body.cursor);
                 return lastPage.body.cursor || undefined;
             }
         }
@@ -39,39 +38,67 @@ function ArticleDisplay({ filters, searchQuery }: { filters: { category: string 
     const articles = (data?.pages?.flatMap(page => page.body.articles) || [])
     .filter(article => article.title.toLowerCase().includes(searchQuery?.toLowerCase() || ""));
     
-    console.log("articles count:", articles.length);
-    console.log("has nextpage:", hasNextPage);
-    console.log("fetching nextpage:", isFetchingNextPage);
+    // console.log("articles count:", articles.length);
 
-
+    // Checks if the user is logged in
     const { data: userData } = apiClient.getUser.useQuery(["getUser"]);
     const isLoggedIn = !!userData?.body?.id; 
 
-    
-    // MIGHT NOT USE SAVE ARTICLES, ONLY MARK AS READ UP TO BACKEND AND TIME
-    // Should work when backend is created, commented out for now
-    
-    // const saveMutation = apiClient.saveArticle.useMutation();
-    // const markAsReadMutation = apiClient.markAsRead.useMutation();
-
+    // API mutation to send requests to the backend API, bookmark and read articles
+    const bookmarkMutation = apiClient.bookmarkArticle.useMutation();
+    const markAsReadMutation = apiClient.readArticle.useMutation();
 
     // state for tracking bookmarked and favorited articles
-    const [favorites, setFavorites] = useState<{ [key: string]: boolean }>({});
+    const [bookmark, setBookmark] = useState<{ [key: string]: boolean }>({});
     const [read, setRead] = useState<{ [key: string]: boolean }>({});
 
-    const toggleFavorite = (articleId: string) => {
-        setFavorites((prev) => ({
-            ...prev,
-            [articleId]: !prev[articleId],
-        }));
+    // marks article as read, calls the API mutation to update the read status in the backend
+    const handleMarkAsRead = (articleId: string) => {
+        const readStatus = !read[articleId];
+
+        markAsReadMutation.mutate(
+            { params: { id: articleId },  body: { read: readStatus } },
+            {
+                onSuccess: () => {
+                    console.log(`Successful mark as read action with article: ${articleId}`);
+                    setRead((prev) => ({
+                        ...prev,
+                        [articleId]: readStatus,
+                    }));
+                },
+                onError: (error) => {
+                    console.error("Error with marking as read:", error);
+                },
+            }
+        );
+    };
+    
+    // bookmark articles 
+    const handleBookmark = (articleId: string) => {
+        const bookmarkStatus = !bookmark[articleId];
+
+        bookmarkMutation.mutate(
+            { params: { id: articleId },  body: { bookmarked: bookmarkStatus } },
+            {
+                onSuccess: () => {
+                    console.log(`Successful bookmark action with article: ${articleId}`);
+                    setBookmark((prev) => ({
+                        ...prev,
+                        [articleId]: bookmarkStatus,
+                    }));
+                },
+                onError: (error) => {
+                    console.error("Error with bookmarking article:", error);
+                },
+            }
+        );
     };
 
-    const toggleRead = (articleId: string) => {
-        setRead((prev) => ({
-            ...prev,
-            [articleId]: !prev[articleId],
-        }));
-    };
+    // TODO
+    // Make a bookmark page that has only the users saved articles
+    // Make sure users that have marked an article as read will not see it again.
+    // Wait for filters to be updated.
+    // moderator page...
 
     return (
         <div className="pt-6 w-full">
@@ -102,26 +129,23 @@ function ArticleDisplay({ filters, searchQuery }: { filters: { category: string 
                       {isLoggedIn && (
                         <div className="flex space-x-3">
 
-                            {/* MIGHT REMOVE SAVING ARTICLES FUNCTIONALITY */}
-
-                            {/* <button 
+                            <button 
                                 className="text-gray-800 hover:text-gray-600"
-                                onClick={() => toggleFavorite(article.id)}
+                                onClick={() => handleMarkAsRead(article.id)}
                             >
-                                <Star 
+                                <EyeIcon
                                     className="w-6 h-6"
-                                    fill={favorites[article.id] ? "gold" : "none"}
+                                    fill={read[article.id] ? "gold" : "none"}
                                 />
-                            </button> */}
-
+                            </button>
 
                             <button 
                                 className="text-gray-800 hover:text-gray-600"
-                                onClick={() => toggleRead(article.id)}
+                                onClick={() => handleBookmark(article.id)}
                             >
-                                <EyeIcon
+                                <Bookmark
                                     className="w-6 h-6"  
-                                    fill={read[article.id] ? "gold" : "none"}
+                                    fill={bookmark[article.id] ? "gold" : "none"}
                                 />
                             </button>
                             
