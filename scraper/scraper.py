@@ -7,6 +7,7 @@ import time
 import signal
 import sys
 import getpass
+import uuid
 
 DB_URL = os.getenv("DATABASE_URL")
 #Kill swtich
@@ -37,21 +38,24 @@ def db_connect():
         return None
     
 
-def scrape_article(id, url):
+def scrape_article(submission_id, url):
     """Scrape an approved article and store in Progres"""
     try:
         req = requests.get(url)
         req.raise_for_status()
         article = simple_json_from_html_string(req.text, use_readability=False)
+        
+        word_count = len(article['plain_content'].split())
+        site_name = urlparse(url).netloc
 
         if article and 'title' in article and 'content' in article:
             conn = db_connect()
             if conn:
                 try:
                     cursor = conn.cursor()
-                    cursor.execute("INSERT INTO articles (title, content, url) VALUES (%s, %s, %s)",
-                                (article['title'], article['content'], url),)
-                    cursor.execute("UPDATE submissions SET scraped = %s WHERE id = %s", (True, submission_id))
+                    cursor.execute("INSERT INTO article (id, created_at, updated_at, url, site_name, title, excerpt, word_count) VALUES (%s, current_timestamp, current_timestamp, %s, %s, %s, '', %s)",
+                                (str(uuid.uuid4()), url, site_name, article['title'], word_count,))
+                    cursor.execute("UPDATE submission SET scraped = true WHERE id = %s", (submission_id,))
                     conn.commit()
                     print(f"Article scraped: {url}")
                 except psycopg2.Error as e:
@@ -70,20 +74,22 @@ def scrape_article(id, url):
 
 def ao_loop():
     """Create an always on loop"""
+    print("Scraper starting...")
+    
     global running
     while running:
         conn = db_connect()
         if conn:
             try:
                 cursor = conn.cursor()
-                cursor.execute("SELECT id, url FROM submissions WHERE moderation_status = %s AND scraped = %s", ("approved", False))
+                cursor.execute("SELECT id, url FROM submission WHERE moderation_status = %s AND scraped = %s", ("approved", False))
                 rows = cursor.fetchall()
 
                 if rows:
-                    for id, url in rows:
+                    for submission_id, url in rows:
                         if not running:
                             break
-                        scrape_article(id, url)
+                        scrape_article(submission_id, url)
 
                 else:
                     if running:
