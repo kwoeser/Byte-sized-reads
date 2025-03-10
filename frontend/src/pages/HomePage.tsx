@@ -27,7 +27,7 @@ const HomePage = ({ filters }: { filters: FilterState }) => {
           Apply filters to find your desired article.
         </p>
 
-        <ArticleDisplay filters={filters} />
+        <ArticleDisplay filters={filters} hideRead={true} />
       </div>
     </div>
   );

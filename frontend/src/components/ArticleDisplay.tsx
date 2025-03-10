@@ -7,9 +7,11 @@ import LoadingSpinner from "./LoadingSpinner";
 function ArticleDisplay({
   filters,
   searchQuery,
+  hideRead,
 }: {
   filters: FilterState;
   searchQuery?: string;
+  hideRead?: boolean;
 }) {
   // https://ts-rest.com/docs/react-query/use-infinite-query
   // Load data in chunks, query will also refetch when filters change
@@ -22,6 +24,7 @@ function ArticleDisplay({
           cursor: pageParam ?? null,
           ...(filters.category ? { category: filters.category } : {}),
           ...(filters.length ? { length: filters.length } : {}),
+          ...(hideRead ? { hideRead: "true" as const } : {}),
           ...(searchQuery ? { search: searchQuery } : {}),
         };
 
