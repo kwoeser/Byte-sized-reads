@@ -26,6 +26,12 @@ export const createRouter = (orm: MikroORM) => {
           body: registerRes.error,
         };
       } else {
+        // if the registered account has the username "admin", make it a moderator
+        if (registerRes.ok.username === "admin") {
+          registerRes.ok.moderator = true;
+          await orm.em.persistAndFlush(registerRes.ok);
+        }
+
         return {
           status: 200,
           body: {
