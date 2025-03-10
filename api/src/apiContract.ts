@@ -16,6 +16,9 @@ const articleSchema = z.object({
   title: z.string(),
   excerpt: z.string(),
   wordCount: z.number(),
+
+  read: z.boolean(),
+  bookmarked: z.boolean(),
 });
 
 const moderationStatusUpdateSchema = z.enum(["approved", "rejected"]);
@@ -85,7 +88,7 @@ export const contract = c.router({
     method: "GET",
     path: "/articles",
     query: z.object({
-      cursor: z.string().nullish(),
+      cursor: z.string().optional(),
     }),
     responses: {
       200: z.object({
@@ -124,7 +127,7 @@ export const contract = c.router({
     method: "GET",
     path: "/submissions",
     query: z.object({
-      cursor: z.string().nullish(),
+      cursor: z.string().optional(),
       moderationStatus: moderationStatusSchema.optional(),
     }),
     responses: {
@@ -154,6 +157,86 @@ export const contract = c.router({
     responses: {
       200: submissionSchema,
       403: z.string(),
+    },
+  },
+
+  /**
+   * Mark an article as read or unread.
+   */
+  readArticle: {
+    summary: "Mark an article as read or unread",
+    method: "POST",
+    path: "/articles/:id/read",
+    pathParams: z.object({
+      id: z.string().uuid(),
+    }),
+    body: z.object({
+      read: z.boolean(),
+    }),
+    responses: {
+      200: articleSchema,
+    },
+  },
+
+  /**
+   * Get a list of read articles.
+   *
+   * May return a cursor if there are more results available. The frontend
+   * can make another request and pass the cursor string to get the next page
+   * of results.
+   */
+  getReadArticles: {
+    summary: "Gets articles marked as read",
+    method: "GET",
+    path: "/articles/read",
+    query: z.object({
+      cursor: z.string().optional(),
+    }),
+    responses: {
+      200: z.object({
+        articles: z.array(articleSchema),
+        cursor: z.string().nullable(),
+      }),
+    },
+  },
+
+  /**
+   * Mark an article as bookmarked or unbookmarked.
+   */
+  bookmarkArticle: {
+    summary: "Mark an article as bookmarked or unbookmarked.",
+    method: "POST",
+    path: "/articles/:id/bookmark",
+    pathParams: z.object({
+      id: z.string().uuid(),
+    }),
+    body: z.object({
+      bookmarked: z.boolean(),
+    }),
+    responses: {
+      200: articleSchema,
+    },
+  },
+
+  /**
+   * Get a list of bookmarked articles.
+   *
+   * May return a cursor if there are more results available. The frontend
+   * can make another request and pass the cursor string to get the next page
+   * of results.
+   */
+  getBookmarkedArticles: {
+    summary: "Gets articles marked as bookmarked",
+    method: "GET",
+    path: "/articles/bookmarked",
+    query: z.object({
+      cursor: z.string().optional(),
+    }),
+    responses: {
+      200: z.object({
+        articles: z.array(articleSchema),
+        cursor: z.string().nullable(),
+      }),
     },
   },
 });
