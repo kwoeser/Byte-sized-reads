@@ -135,6 +135,7 @@ export const createRouter = (orm: MikroORM) => {
             title: a.title,
             excerpt: a.excerpt,
             wordCount: a.wordCount,
+            category: a.category,
 
             read: readStatusSet.has(a.id),
             bookmarked: bookmarkSet.has(a.id),
@@ -153,12 +154,13 @@ export const createRouter = (orm: MikroORM) => {
           body: {
             id: existing.id,
             url: existing.url,
+            category: existing.category,
             moderationStatus: existing.moderationStatus ?? null,
           },
         };
       }
 
-      const submission = new Submission(req.body.url);
+      const submission = new Submission(req.body.url, req.body.category);
       await orm.em.persistAndFlush(submission);
 
       return {
@@ -166,6 +168,7 @@ export const createRouter = (orm: MikroORM) => {
         body: {
           id: submission.id,
           url: submission.url,
+          category: submission.category,
           moderationStatus: submission.moderationStatus ?? null,
         },
       };
@@ -202,6 +205,7 @@ export const createRouter = (orm: MikroORM) => {
           submissions: submissions.items.map((s) => ({
             id: s.id,
             url: s.url,
+            category: s.category,
             moderationStatus: s.moderationStatus ?? null,
           })),
           cursor: submissions.endCursor,
@@ -253,6 +257,7 @@ export const createRouter = (orm: MikroORM) => {
         body: {
           id: submission.id,
           url: submission.url,
+          category: submission.category,
           moderationStatus: submission.moderationStatus ?? null,
         },
       };
@@ -312,6 +317,7 @@ export const createRouter = (orm: MikroORM) => {
           title: article.title,
           excerpt: article.excerpt,
           wordCount: article.wordCount,
+          category: article.category,
 
           read,
           bookmarked,
@@ -361,6 +367,7 @@ export const createRouter = (orm: MikroORM) => {
             title: r.article.$.title,
             excerpt: r.article.$.excerpt,
             wordCount: r.article.$.wordCount,
+            category: r.article.$.category,
 
             read: true,
             bookmarked: bookmarkSet.has(r.article.$.id),
@@ -424,6 +431,7 @@ export const createRouter = (orm: MikroORM) => {
           title: article.title,
           excerpt: article.excerpt,
           wordCount: article.wordCount,
+          category: article.category,
 
           read,
           bookmarked,
@@ -473,6 +481,7 @@ export const createRouter = (orm: MikroORM) => {
             title: b.article.$.title,
             excerpt: b.article.$.excerpt,
             wordCount: b.article.$.wordCount,
+            category: b.article.$.category,
 
             read: readStatusSet.has(b.article.$.id),
             bookmarked: true,

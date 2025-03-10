@@ -18,12 +18,16 @@ export class Article extends BaseEntity {
   @Property()
   wordCount!: number;
 
+  @Property()
+  category!: string;
+
   constructor(
     url: string,
     siteName: string,
     title: string,
     excerpt: string,
-    wordCount: number
+    wordCount: number,
+    category: string
   ) {
     super();
     this.url = url;
@@ -31,5 +35,6 @@ export class Article extends BaseEntity {
     this.title = title;
     this.excerpt = excerpt;
     this.wordCount = wordCount;
+    this.category = category;
   }
 }

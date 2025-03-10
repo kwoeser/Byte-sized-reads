@@ -9,6 +9,8 @@ const userSchema = z.object({
   moderator: z.boolean(),
 });
 
+const categorySchema = z.enum(["technology", "travel", "video games"]);
+
 const articleSchema = z.object({
   id: z.string().uuid(),
   url: z.string(),
@@ -16,6 +18,7 @@ const articleSchema = z.object({
   title: z.string(),
   excerpt: z.string(),
   wordCount: z.number(),
+  category: z.string(),
 
   read: z.boolean(),
   bookmarked: z.boolean(),
@@ -26,6 +29,7 @@ const moderationStatusSchema = z.enum(["none", "approved", "rejected"]);
 const submissionSchema = z.object({
   id: z.string().uuid(),
   url: z.string(),
+  category: z.string(),
   moderationStatus: moderationStatusSchema,
 });
 
@@ -107,6 +111,7 @@ export const contract = c.router({
     path: "/articles/submit",
     body: z.object({
       url: z.string().url(),
+      category: categorySchema,
     }),
     responses: {
       200: submissionSchema,
