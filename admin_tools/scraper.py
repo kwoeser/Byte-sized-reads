@@ -8,7 +8,7 @@ import signal
 import sys
 import getpass
 
-DB_URL = "postgres://postgres:G6NnIXtBWhhlT9v@137.66.20.78:5432/project"
+DB_URL = os.getenv("DATABASE_URL")
 #Kill swtich
 running = True
 password = "confirm"
