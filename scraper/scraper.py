@@ -48,28 +48,38 @@ def scrape_article(submission_id, url):
         word_count = len(article['plain_content'].split())
         site_name = urlparse(url).netloc
 
-        if article and 'title' in article and 'content' in article:
-            conn = db_connect()
-            if conn:
-                try:
-                    cursor = conn.cursor()
-                    cursor.execute("INSERT INTO article (id, created_at, updated_at, url, site_name, title, excerpt, word_count) VALUES (%s, current_timestamp, current_timestamp, %s, %s, %s, '', %s)",
-                                (str(uuid.uuid4()), url, site_name, article['title'], word_count,))
-                    cursor.execute("UPDATE submission SET scraped = true WHERE id = %s", (submission_id,))
-                    conn.commit()
-                    print(f"Article scraped: {url}")
-                except psycopg2.Error as e:
-                    print(f"Error scraping: {e}")
-                    conn.rollback()
-                finally:
-                    cursor.close()
-                    conn.close()
+        conn = db_connect()
+        if conn:
+            try:
+                cursor = conn.cursor()
+                cursor.execute("INSERT INTO article (id, created_at, updated_at, url, site_name, title, excerpt, word_count) VALUES (%s, current_timestamp, current_timestamp, %s, %s, %s, '', %s)",
+                            (str(uuid.uuid4()), url, site_name, article['title'], word_count,))
+                cursor.execute("UPDATE submission SET scraped = true WHERE id = %s", (submission_id,))
+                conn.commit()
+                print(f"Article scraped: {url}")
+            except psycopg2.Error as e:
+                print(f"Error scraping: {e}")
+                conn.rollback()
+            finally:
+                cursor.close()
+                conn.close()
     
         else:
             print(f"Cannot Scrape Article {url}")
     
     except requests.exceptions.RequestException as e:
         print(f"Error fetching {e}")
+
+        # set scraped to true anyway so we don't redo it
+        conn = db_connect()
+        if conn:
+            try:
+                cursor = conn.cursor()
+                cursor.execute("UPDATE submission SET scraped = true WHERE id = %s", (submission_id,))
+                conn.commit()
+            finally:
+                cursor.close()
+                conn.close()
 
 
 def ao_loop():
