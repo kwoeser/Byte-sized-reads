@@ -95,7 +95,7 @@ function ArticleDisplay({ filters, searchQuery }: { filters: { category: string 
     };
 
     // TODO
-    // Make a bookmark page that has only the users saved articles
+    // Make sure that when an article is bookmarked the state of the bookmark will stay, maybe not have time
     // Make sure users that have marked an article as read will not see it again.
     // Wait for filters to be updated.
     // moderator page...

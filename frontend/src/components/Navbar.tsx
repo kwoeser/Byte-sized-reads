@@ -3,7 +3,7 @@ import { useState } from "react";
 import { apiClient } from "../Connection";
 import DropdownFilter from "./DropdownFilter";
 import LogoutButton from "./LogoutButton";
-import { Home, Book, ShieldCheck } from "lucide-react";
+import { Home, Book, ShieldCheck, Bookmark } from "lucide-react";
 
 const Navbar = ({ onFilterChange }: { onFilterChange: (filters: { category: string | null; readingTime: string | null }) => void }) => {
   
@@ -55,12 +55,23 @@ const Navbar = ({ onFilterChange }: { onFilterChange: (filters: { category: stri
               <span>Moderator</span>
             </Link>
           )}
+
+          
+
         </div>
        
         {/* Right side, Login or Logout */}
         {/* bug: login shows for a split second when you reload page. */}
-        <div>
-        
+        <div className="flex items-center space-x-10">
+          
+          {/* bookmarks tab only if user is logged in */}
+          {isLoggedIn && (
+            <Link to="/BookmarkPage" className="flex items-center hover:text-red-500">
+              <Bookmark className="mr-2" size={18} />
+              <span>Bookmarks</span>
+            </Link>
+          )}
+
           {isLoggedIn ? (
             <div className="flex items-center space-x-4">
               <span className="text-gray-700">Welcome, {username}</span>
