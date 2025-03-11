@@ -108,6 +108,13 @@ export const createRouter = (orm: MikroORM) => {
 
       let categoryFilter = req.query.category;
 
+      // filter on title
+      let searchFilter = {};
+      if (req.query.search) {
+        const escapedSearch = req.query.search.replaceAll(/[^A-Za-z0-9 ]/g, "");
+        searchFilter = { title: { $ilike: "%" + escapedSearch + "%" } };
+      }
+
       // get articles
       const prevCursor = req.query.cursor ?? undefined;
       const articles = await orm.em.findByCursor(
@@ -115,6 +122,7 @@ export const createRouter = (orm: MikroORM) => {
         {
           ...(wordCountFilter ? { wordCount: wordCountFilter } : {}),
           ...(categoryFilter ? { category: categoryFilter } : {}),
+          ...searchFilter,
         },
         {
           first: ARTICLES_PER_PAGE,

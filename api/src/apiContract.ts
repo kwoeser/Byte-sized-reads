@@ -97,6 +97,7 @@ export const contract = c.router({
       category: categoryFilterSchema.optional(),
       length: lengthFilterSchema.optional(),
       hideRead: z.enum(["true", "false"]).optional(), // query strings must be strings
+      search: z.string().optional(),
     }),
     responses: {
       200: z.object({
