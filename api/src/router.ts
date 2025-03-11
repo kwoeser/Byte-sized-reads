@@ -132,7 +132,7 @@ export const createRouter = (orm: MikroORM) => {
             article: { $in: articles.items.map((a) => a.id) },
           },
         });
-        readStatusSet = new Set(readStatusRows.map((r) => r.id));
+        readStatusSet = new Set(readStatusRows.map((r) => r.article.id));
       }
 
       // if authed, get read statuses for these articles
@@ -144,7 +144,7 @@ export const createRouter = (orm: MikroORM) => {
             article: { $in: articles.items.map((a) => a.id) },
           },
         });
-        bookmarkSet = new Set(bookmarkRows.map((r) => r.id));
+        bookmarkSet = new Set(bookmarkRows.map((b) => b.article.id));
       }
 
       // filter articles if read
