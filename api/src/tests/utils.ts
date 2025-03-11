@@ -7,6 +7,7 @@ import { assert } from "vitest";
 import { contract } from "../apiContract.js";
 import { createApp } from "../app.js";
 import { SESSION_COOKIE_NAME } from "../auth.js";
+import { Article } from "../entities/Article.js";
 import { testOrmConfig } from "../mikro-orm.config.js";
 
 export type TestApp = Awaited<ReturnType<typeof startTestApp>>;
@@ -94,4 +95,47 @@ export const parseSetSessionCookie = (setCookie: string[]) => {
   assert(match);
 
   return match[1];
+};
+
+/**
+ * Creates an Article object for testing.
+ */
+export const makeExampleArticle = (n: number, category: string) => {
+  return new Article(
+    "https://example.com/posts/" + category + "/" + n,
+    "example.com",
+    "Post " + n,
+    "",
+    1234,
+    category
+  );
+};
+/**
+ * Creates multiple Article objects for testing.
+ */
+export const makeExampleArticles = (n: number, category: string) => {
+  const articles = [];
+  for (let i = 1; i <= n; i++) {
+    articles.push(makeExampleArticle(i, category));
+  }
+  return articles;
+};
+
+/**
+ * Registers an account and returns a ts-rest client with auth configured.
+ *
+ * Optionally takes a username.
+ */
+export const makeAuthedClient = async (app: TestApp, username = "test") => {
+  const client = createTestClient(app);
+  const registerRes = await client.register({
+    body: {
+      username: username,
+      password: "testtest",
+    },
+  });
+  const setCookie = registerRes.headers.getSetCookie();
+  const sessionCookie = parseSetSessionCookie(setCookie);
+  const authedClient = createTestClient(app, { sessionCookie });
+  return authedClient;
 };
