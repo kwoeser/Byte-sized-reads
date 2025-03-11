@@ -2,7 +2,12 @@ import type { EntityManager } from "@mikro-orm/postgresql";
 import { afterEach, assert, beforeEach, describe, expect, test } from "vitest";
 import { Submission } from "../entities/Submission.js";
 import { User } from "../entities/User.js";
-import { createTestClient, startTestApp, type TestApp, parseSetSessionCookie } from "./utils.js";
+import {
+  createTestClient,
+  startTestApp,
+  type TestApp,
+  parseSetSessionCookie,
+} from "./utils.js";
 
 describe("/articles/submit", () => {
   // create an instance of the api and database for each test
@@ -26,6 +31,7 @@ describe("/articles/submit", () => {
     const res = await client.submitArticle({
       body: {
         url: "https://example.com/posts/1",
+        category: "technology",
       },
     });
     // should succeed
@@ -41,6 +47,7 @@ describe("/articles/submit", () => {
     const res = await client.submitArticle({
       body: {
         url: "https://example.com/posts/1",
+        category: "technology",
       },
     });
     // should succeed
@@ -77,14 +84,14 @@ describe("/articles/submit", () => {
 
     // submit
     const res1 = await client.submitArticle({
-      body: { url: "https://example.com/posts/1" },
+      body: { url: "https://example.com/posts/1", category: "technology" },
     });
     // should succeed
     assert(res1.status === 200, "should respond with 200");
 
     // submit
     const res2 = await client.submitArticle({
-      body: { url: "https://example.com/posts/1" },
+      body: { url: "https://example.com/posts/1", category: "technology" },
     });
     // should succeed
     assert(res2.status === 200, "should respond with 200");
@@ -112,7 +119,7 @@ describe("/submissions", () => {
   test("returns submissions", async () => {
     const client = createTestClient(app);
 
-    const registerRes  = await client.register({
+    const registerRes = await client.register({
       body: {
         username: "PANTERA",
         password: "VULGARDISPLAYOFPOWER",
@@ -127,7 +134,7 @@ describe("/submissions", () => {
     const loginRes = await client.login({
       body: {
         username: "PANTERA",
-        password: "VULGARDISPLAYOFPOWER"
+        password: "VULGARDISPLAYOFPOWER",
       },
     });
     const setCookie = loginRes.headers.getSetCookie();
@@ -138,18 +145,21 @@ describe("/submissions", () => {
     const res1 = await client.submitArticle({
       body: {
         url: "https://example.com/posts/1",
+        category: "technology",
       },
     });
     assert(res1.status === 200, "should respond with 200");
     const res2 = await client.submitArticle({
       body: {
         url: "https://example.com/posts/2",
+        category: "technology",
       },
     });
     assert(res2.status === 200, "should respond with 200");
     const res3 = await client.submitArticle({
       body: {
         url: "https://example.com/posts/3",
+        category: "technology",
       },
     });
     assert(res3.status === 200, "should respond with 200");
@@ -172,7 +182,7 @@ describe("/submissions", () => {
 
   test("should only be available to moderators", async () => {
     const client = createTestClient(app);
-    const registerRes  = await client.register({
+    const registerRes = await client.register({
       body: {
         username: "REFUSED",
         password: "THESHAPEOFPUNKTOCOME",
@@ -184,7 +194,7 @@ describe("/submissions", () => {
     const loginRes = await client.login({
       body: {
         username: "REFUSED",
-        password: "THESHAPEOFPUNKTOCOME"
+        password: "THESHAPEOFPUNKTOCOME",
       },
     });
     assert(loginRes.status === 200, "should respond with 200");
@@ -196,8 +206,15 @@ describe("/submissions", () => {
     const authedClient = createTestClient(app, { sessionCookie });
 
     // submit some articles
-    await client.submitArticle({ body: { url: "https://example.com/posts/1" } });
-    await client.submitArticle({ body: { url: "https://example.com/posts/2" } });
+    await client.submitArticle({
+      body: {
+        url: "https://example.com/posts/1",
+        category: "technology",
+      },
+    });
+    await client.submitArticle({
+      body: { url: "https://example.com/posts/2", category: "technology" },
+    });
 
     // get submissions as non-moderator
     const res = await authedClient.getSubmissions();
@@ -207,7 +224,7 @@ describe("/submissions", () => {
   test("should be able to filter for unmoderated only", async () => {
     const client = createTestClient(app);
 
-    const registerRes  = await client.register({
+    const registerRes = await client.register({
       body: {
         username: "MetallicaRULZ",
         password: "ANDJUSTICEFORALL",
@@ -224,7 +241,7 @@ describe("/submissions", () => {
     const loginRes = await client.login({
       body: {
         username: "MetallicaRULZ",
-        password: "ANDJUSTICEFORALL"
+        password: "ANDJUSTICEFORALL",
       },
     });
     assert(loginRes.status === 200, "should respond with 200");
@@ -236,11 +253,17 @@ describe("/submissions", () => {
     const moderatorClient = createTestClient(app, { sessionCookie });
 
     // submit some articles
-    await client.submitArticle({ body: { url: "https://example.com/posts/1" } });
-    await client.submitArticle({ body: { url: "https://example.com/posts/2" } });
+    await client.submitArticle({
+      body: { url: "https://example.com/posts/1", category: "technology" },
+    });
+    await client.submitArticle({
+      body: { url: "https://example.com/posts/2", category: "technology" },
+    });
 
     // get unmoderated submissions as moderator
-    const res = await moderatorClient.getSubmissions({ query: { moderationStatus: "none" } });
+    const res = await moderatorClient.getSubmissions({
+      query: { moderationStatus: "none" },
+    });
     expect(res.status).toBe(200);
   });
 });
@@ -263,7 +286,7 @@ describe("/submissions/:id/moderate", () => {
   ])("returns new status when %s", async ([desc, req]) => {
     const client = createTestClient(app);
     // register
-    const registerRes  = await client.register({
+    const registerRes = await client.register({
       body: {
         username: "MetallicaRULZ",
         password: "ANDJUSTICEFORALL",
@@ -281,7 +304,7 @@ describe("/submissions/:id/moderate", () => {
     const loginRes = await client.login({
       body: {
         username: "MetallicaRULZ",
-        password: "ANDJUSTICEFORALL"
+        password: "ANDJUSTICEFORALL",
       },
     });
     assert(loginRes.status === 200, "should respond with 200");
@@ -296,6 +319,7 @@ describe("/submissions/:id/moderate", () => {
     const res1 = await client.submitArticle({
       body: {
         url: "https://example.com/posts/1",
+        category: "technology",
       },
     });
     assert(res1.status === 200, "should respond with 200");
@@ -324,6 +348,7 @@ describe("/submissions/:id/moderate", () => {
     const res1 = await client.submitArticle({
       body: {
         url: "https://example.com/posts/1",
+        category: "technology",
       },
     });
     assert(res1.status === 200, "should respond with 200");
@@ -341,7 +366,7 @@ describe("/submissions/:id/moderate", () => {
 
   test("should only be available to moderators", async () => {
     const client = createTestClient(app);
-    const registerRes  = await client.register({
+    const registerRes = await client.register({
       body: {
         username: "MetallicaRULZ",
         password: "ANDJUSTICEFORALL",
@@ -353,7 +378,7 @@ describe("/submissions/:id/moderate", () => {
     const loginRes = await client.login({
       body: {
         username: "MetallicaRULZ",
-        password: "ANDJUSTICEFORALL"
+        password: "ANDJUSTICEFORALL",
       },
     });
     assert(loginRes.status === 200, "should respond with 200");
@@ -365,7 +390,9 @@ describe("/submissions/:id/moderate", () => {
     const authedClient = createTestClient(app, { sessionCookie });
 
     // submit an article
-    const res1 = await client.submitArticle({ body: { url: "https://example.com/posts/1" } });
+    const res1 = await client.submitArticle({
+      body: { url: "https://example.com/posts/1", category: "technology" },
+    });
     assert(res1.status === 200, "should respond with 200");
 
     // try to moderate as non-moderator
