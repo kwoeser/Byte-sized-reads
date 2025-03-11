@@ -36,6 +36,10 @@ jobs:
           cache: 'pnpm'  
           cache-dependency-path: ./frontend/pnpm-lock.yaml  
 
+      - name: Install api dependencies
+        working-directory: ./api
+        run: pnpm install
+
       - name: Install dependencies
         working-directory: ./frontend
         run: pnpm install
