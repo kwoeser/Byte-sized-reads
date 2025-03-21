@@ -1,5 +1,6 @@
 TECHNOLOGY
 
+https://www.davepacheco.net/blog/2024/challenges-deploying-postgresql-9.2-for-high-availability/
 https://without.boats/blog/generators-with-unpin-cell/
 https://without.boats/blog/unpin-cell/
 https://without.boats/blog/pinned-places/
