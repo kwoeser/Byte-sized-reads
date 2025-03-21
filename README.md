@@ -37,4 +37,4 @@ Using the application:
 
 ## Authors
 
-Hazel Pinit, An Mai, Alen Wilson, Sam Ellis, Karma Woeser, Jason Webster
+Karma Woeser, Hazel Pinit, An Mai, Alen Wilson, Sam Ellis, Jason Webster
