@@ -16,6 +16,7 @@ const BACKEND_URL = "/api";
 export const apiClient = initQueryClient(contract, {
   baseUrl: BACKEND_URL,
   baseHeaders: { "Content-Type": "application/json" },
-  baseFetch: (url, options) =>
+  baseFetch: (url: RequestInfo, options: RequestInit = {}) =>
     fetch(url, { ...options, credentials: "include" }),
+  
 });
