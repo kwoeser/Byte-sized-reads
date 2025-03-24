@@ -1,2 +1,7 @@
 # SSH into EC2 instance 
 ssh -i id.pem ubuntu@3.147.55.38  
+
+
+# almost everything is not secure
+# duckdns for domain name
+# public EC2 IP: 3.147.55.38

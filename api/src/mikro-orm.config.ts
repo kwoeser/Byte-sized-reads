@@ -33,7 +33,7 @@ export default defineConfig({
   ...baseOptions,
 
   clientUrl: env.DATABASE_URL,
-  dbName: "project",
+  dbName: "byte_reads",
 
   debug: true,
 });

@@ -5,10 +5,7 @@ services:
     ports:
       - "5174:5174"
     environment:
-      - DATABASE_URL=postgresql://postgres:mypassword@db:5432/project
-    depends_on:
-      db:
-        condition: service_healthy
+      - DATABASE_URL=postgresql://karma:karma1234@172.31.6.95:5432/byte_reads    
     networks:
       - bossmode2_network
 
@@ -25,33 +22,11 @@ services:
     networks:
       - bossmode2_network
 
-  db:
-    image: postgres:latest
-    container_name: postgres-db
-    restart: always
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: mypassword
-      POSTGRES_DB: project
-    ports:
-      - "5432:5432"
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-    networks:
-      - bossmode2_network
-    healthcheck:
-      test: ["CMD", "pg_isready", "-U", "postgres"]
-      interval: 5s
-      retries: 5
-      start_period: 10s
-  
+ 
   scraper:
     build: ./scraper
     environment:
-      - DATABASE_URL=postgresql://postgres:mypassword@db:5432/project
-    depends_on:
-      db:
-        condition: service_healthy
+      - DATABASE_URL=postgresql://karma:karma1234@172.31.6.95:5432/byte_reads
     networks:
       - bossmode2_network
 
