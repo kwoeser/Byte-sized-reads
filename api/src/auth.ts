@@ -220,7 +220,8 @@ const setCookie = (res: express.Response, token: string, session: Session) => {
   res.cookie(SESSION_COOKIE_NAME, token, {
     // domain: new URL(env.PUBLIC_URL).hostname, // TODO
     path: "/",
-    secure: true,
+    // secure: true,
+    secure: false, // just for testing change back to true
     httpOnly: true,
     sameSite: "lax",
     expires: session.expiresAt,
