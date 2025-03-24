@@ -1,0 +1,2 @@
+# SSH into EC2 instance 
+ssh -i id.pem ubuntu@3.147.55.38  
