@@ -3,7 +3,9 @@ import { contract } from "../../api/src/apiContract";
 
 
 // api calls go through vite's proxy
-const BACKEND_URL = "/api";
+// handles AWS URL now
+const BACKEND_URL = import.meta.env.VITE_API_URL || "/api";
+
 
 export const apiClient = initQueryClient(contract, {
   baseUrl: BACKEND_URL,

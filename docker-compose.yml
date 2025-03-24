@@ -18,6 +18,8 @@ services:
       dockerfile: frontend.Dockerfile
     ports:
       - "5173:5173"
+    environment:
+      - VITE_API_URL=http://3.147.55.38:5174
     depends_on:
       - backend
     networks:
