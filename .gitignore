@@ -173,3 +173,4 @@ cython_debug/
 api/node_modules
 frontend/node_modules
 admin_tools/articles.txt
+aws
