@@ -1,6 +1,6 @@
 # ByteSized Reads
 
-[Link to App](http://bytereads.duckdns.org:5173/)
+[Link to App](https://bytereads.duckdns.org/)
 
 ByteSized Reads is a web application that provides personalized article recommendations to users.
 
