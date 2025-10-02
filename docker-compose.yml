@@ -5,7 +5,7 @@ services:
     ports:
       - "5174:5174"
     environment:
-      - DATABASE_URL=postgresql://karma:karma1234@172.31.6.95:5432/byte_reads    
+      - DATABASE_URL=${DATABASE_URL} 
     networks:
       - bossmode2_network
 
@@ -16,7 +16,7 @@ services:
     ports:
       - "5173:5173"
     environment:
-      - VITE_API_URL=http://3.147.55.38:5174
+      - VITE_API_URL=${VITE_API_URL}
     depends_on:
       - backend
     networks:
@@ -26,7 +26,7 @@ services:
   scraper:
     build: ./scraper
     environment:
-      - DATABASE_URL=postgresql://karma:karma1234@172.31.6.95:5432/byte_reads
+      - DATABASE_URL=${DATABASE_URL}
     networks:
       - bossmode2_network
 
